@@ -1,0 +1,41 @@
+[22-Jul-2020 20:18:19 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:18:19 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:18:19 UTC] PHP Warning:  include(): Failed opening 'api/funciones/funciones.php' for inclusion (include_path='.:/opt/alt/php71/usr/share/pear') in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:18:28 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:18:28 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:18:28 UTC] PHP Warning:  include(): Failed opening 'api/funciones/funciones.php' for inclusion (include_path='.:/opt/alt/php71/usr/share/pear') in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:20 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:20 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:20 UTC] PHP Warning:  include(): Failed opening 'api/funciones/funciones.php' for inclusion (include_path='.:/opt/alt/php71/usr/share/pear') in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:20 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function param() in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 3
+[22-Jul-2020 20:19:21 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:21 UTC] PHP Warning:  include(api/funciones/funciones.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:21 UTC] PHP Warning:  include(): Failed opening 'api/funciones/funciones.php' for inclusion (include_path='.:/opt/alt/php71/usr/share/pear') in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 2
+[22-Jul-2020 20:19:21 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function param() in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php:3
+Stack trace:
+#0 {main}
+  thrown in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 3
+[22-Jul-2020 17:09:53 America/Mexico_City] PHP Warning:  include(head.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 3
+[22-Jul-2020 17:09:53 America/Mexico_City] PHP Warning:  include(head.php): failed to open stream: No such file or directory in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 3
+[22-Jul-2020 17:09:53 America/Mexico_City] PHP Warning:  include(): Failed opening 'head.php' for inclusion (include_path='.:/opt/alt/php71/usr/share/pear') in /home/applabco/public_html/AlarmaVecinal/mapas/mapaapp.php on line 3
+[22-Jul-2020 17:10:44 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:44 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:10:53 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:53 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:10:54 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:54 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:10:55 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:55 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:10:55 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:55 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:10:56 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:10:56 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:11:39 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:11:39 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:11:42 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:11:42 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
+[22-Jul-2020 17:11:51 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 5
+[22-Jul-2020 17:11:51 America/Mexico_City] PHP Notice:  Undefined variable: ver in /home/applabco/public_html/AlarmaVecinal/head.php on line 6
