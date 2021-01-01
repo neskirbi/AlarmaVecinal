@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -1697,7 +1698,39 @@ public class Funciones {
 
         return ubicacion;
     }
+    public boolean VerificarSwitchGPS() {
+        String provider = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        System.out.println("Provider contains=> " + provider);
+        if (provider.contains("gps") || provider.contains("network")){
+            return true;
+        }
+        return false;
+    }
 
+    public int ObtenerSegundosDif(String horanew,String horaold){
+        Logo("tiempodifereicnci",horanew+": "+ObtenerSegundos(horanew)+"---"+ObtenerSegundos(horaold)+": "+horaold);
+        return ObtenerSegundos(horanew)-ObtenerSegundos(horaold);
+
+    }
+    public int ObtenerSegundos(String hora){
+        String[] tiempo=hora.split(":");
+        return (Integer.parseInt(tiempo[0])*3600)+(Integer.parseInt(tiempo[1])*60)+Integer.parseInt(tiempo[2]);
+    }
+    public boolean EsHoy(String fecha){
+        String[] fechanow=GetDate().split(" "),fechaold=fecha.split(" ");
+
+        if((fechanow[0]).contains((fechaold[0]))){
+            return true;
+        }
+        return false;
+    }
+    public boolean EsUnMinuto(String fecha){
+        String[] fechanow=GetDate().split(" "),fechaold=fecha.split(" ");
+        if(ObtenerSegundosDif(fechanow[1],fechaold[1])<61){
+            return true;
+        }
+        return false;
+    }
 }
 
 

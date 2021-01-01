@@ -56,19 +56,19 @@ public class Emergencia extends Service {
         listener=new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                funciones.Logo("Emergencia", snapshot.getValue()+"");
-                Emergencias emergencias=snapshot.getValue(Emergencias.class);
-                if(!funciones.ChecarIdEmergencia(emergencias.getId_emergencia())){
-                    funciones.GuardarIdEmergencia(emergencias.getId_emergencia());
-                    if(funciones.FechaHoy(emergencias.getFecha()) && funciones.TiempoToInt(emergencias.getFecha())<40){
-                        try {
-                            JSONObject ubicacion=new JSONObject(emergencias.getUbicacion());
-                            String body=emergencias.getNombre()+"\n"+ubicacion.get("direccion");
-                            Sonar(body,emergencias.getNombre(),ubicacion.get("direccion").toString(),ubicacion.get("ubicacion").toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                //funciones.Logo("Emergencialistener", snapshot.getValue()+"");
+                Emergencias emergencia=snapshot.getValue(Emergencias.class);
+                funciones.Logo("Emergencialistener", "Eshoy:"+funciones.EsHoy(emergencia.getFecha())+"   Esunminuto:"+funciones.EsUnMinuto(emergencia.getFecha()));
+                if(funciones.EsHoy(emergencia.getFecha()) && funciones.EsUnMinuto(emergencia.getFecha())){
+                    try {
 
+                        JSONObject ubicacion=new JSONObject(emergencia.getUbicacion());
+                        String body=emergencia.getNombre()+"\n"+ubicacion.get("direccion");
+                        Sonar(body,emergencia.getNombre(),ubicacion.get("direccion").toString(),ubicacion.get("ubicacion").toString());
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        funciones.Logo("Emergencialistener", "Errrror:"+e.getMessage());
                     }
 
                 }

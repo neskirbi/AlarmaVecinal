@@ -44,6 +44,7 @@ public class AdapterEmergencias extends RecyclerView.Adapter<AdapterEmergencias.
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        holder.fecha.setText(item.getFecha());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,10 +65,12 @@ public class AdapterEmergencias extends RecyclerView.Adapter<AdapterEmergencias.
     class EmergenciasViewHolder extends RecyclerView.ViewHolder{
         TextView nombre;
         TextView direccion;
+        TextView fecha;
         public EmergenciasViewHolder( View itemView) {
             super(itemView);
             nombre = itemView.findViewById(R.id.nombre);
             direccion = itemView.findViewById(R.id.direccion);
+            fecha = itemView.findViewById(R.id.fecha);
 
         }
     }

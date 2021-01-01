@@ -103,8 +103,7 @@ public class AvisosLista extends AppCompatActivity implements AdapterAvisos.Recy
     @Override
     protected void onResume() {
         super.onResume();
-       /* Descarga descarga=new Descarga();
-        descarga.executeOnExecutor(threadPoolExecutor);*/
+       avisos.clear();
         Cargar();
     }
 
@@ -177,10 +176,9 @@ public class AvisosLista extends AppCompatActivity implements AdapterAvisos.Recy
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 funciones.Logo("Notificaciones", snapshot.getValue()+"");
                 Avisos aviso=snapshot.getValue(Avisos.class);
-                avisos.add(new Avisos(aviso.getId_aviso(),aviso.getId_usuario(),aviso.getTitulo(),aviso.getMensaje(),aviso.getFecha(),aviso.getJson()));
+                avisos.add(0,new Avisos(aviso.getId_aviso(),aviso.getId_usuario(),aviso.getTitulo(),aviso.getMensaje(),aviso.getFecha(),aviso.getJson()));
 
 
-                Collections.reverse(avisos);
 
                 avisos_lista=findViewById(R.id.avisos_lista);
                 avisos_lista.setLayoutManager(new LinearLayoutManager(context));

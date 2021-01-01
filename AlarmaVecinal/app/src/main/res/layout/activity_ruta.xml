@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".Mapas.Ruta">
 
+
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/mapa"
@@ -28,6 +29,18 @@
         android:textStyle="bold"
         android:textColor="#000000"
         android:background="@drawable/redondeado"/>
+
+    <TextView
+        android:id="@+id/nota"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:textColor="@color/error"
+        android:text="Encender GPS"
+        android:textSize="30dp"
+        android:background="@drawable/redondeado"
+        android:padding="10dp"
+        android:visibility="gone"/>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/banner"

@@ -38,19 +38,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginRight="20dp"
-                android:layout_marginBottom="15dp"
-                android:layout_gravity="bottom|end"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_gravity="top|left"
                 android:visibility="gone"
                 android:gravity="center_vertical">
-                <TextView
-                    android:id="@+id/tag_nombre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Nombre"
-                    android:background="@drawable/redondeado_azul"
-                    android:layout_marginRight="10dp"
-                    android:padding="10dp"/>
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
 
                     android:id="@+id/verruta"
@@ -60,6 +53,15 @@
                     android:backgroundTint="@color/colorPrimary"
                     android:src="@drawable/icono_ruta"
                     app:tint="#ffffff"/>
+
+                <TextView
+                    android:id="@+id/tag_nombre"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nombre"
+                    android:background="@drawable/redondeado_azul"
+                    android:layout_marginLeft="10dp"
+                    android:padding="10dp"/>
             </LinearLayout>
 
         </FrameLayout>

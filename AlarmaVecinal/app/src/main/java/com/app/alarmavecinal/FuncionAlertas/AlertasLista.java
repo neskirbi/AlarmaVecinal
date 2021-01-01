@@ -95,8 +95,7 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
     @Override
     protected void onResume() {
         super.onResume();
-        /*Descarga descarga=new Descarga();
-        descarga.executeOnExecutor(threadPoolExecutor);*/
+        alertas.clear();
         Cargar();
     }
 
@@ -167,10 +166,8 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 funciones.Logo("Notificaciones", snapshot.getValue()+"");
                 AlertasL alerta=snapshot.getValue(AlertasL.class);
-                alertas.add(new AlertasL(alerta.getId_alerta(),alerta.getId_usuario(),alerta.getImagen(),alerta.getTitulo(),alerta.getNombre(),alerta.getFecha(),alerta.getJson()));
+                alertas.add(0,new AlertasL(alerta.getId_alerta(),alerta.getId_usuario(),alerta.getImagen(),alerta.getTitulo(),alerta.getNombre(),alerta.getFecha(),alerta.getJson()));
 
-
-                Collections.reverse(alertas);
 
                 alertas_lista=findViewById(R.id.alertas_lista);
 

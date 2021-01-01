@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.alarmavecinal.Adapters.AdapterEmergencias;
 import com.app.alarmavecinal.BuildConfig;
@@ -58,12 +59,16 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
     RecyclerView emergencias_lista;
     ArrayList<Emergencias> emergencias = new ArrayList<>();
     private MapaEmergencia algo;
-    private GoogleMap map;
+    private GoogleMap googleMap;
     double verlat = 0.0, verlon = 0.0;
     String vernombre = "", verdireccion = "";
+    boolean switchcoor=true;
 
     FloatingActionButton verruta;
     LinearLayout contenedor_verruta;
+    private ArrayList<Double> Alat;
+    private ArrayList<Double> Alon;
+    private ArrayList<String> Anombre;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +105,12 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
             public void onClick(View v) {
                 funciones.Vibrar(funciones.VibrarPush());
                 if (verlat != 0.0 || verlon != 0.0) {
-                    PedirPermisoLocation();
+                    if(funciones.VerificarSwitchGPS()){
+                        PedirPermisoLocation();
+                    }else{
+                        Toast.makeText(context, "Encender GPS.", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -110,17 +120,13 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        map = googleMap;
-        if (funciones.GetUbicacion().replace(" ", "").length() > 0) {
-            JSONObject coordenadas = null;
-            try {
-                coordenadas = new JSONObject(funciones.GetUbicacion());
-                Mover(Double.parseDouble(coordenadas.getString("lat")), Double.parseDouble(coordenadas.getString("lon")), 10);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
+        this.googleMap = googleMap;
 
+        ObtenerCoorVivo();
+
+    }
+
+    private void ObtenerCoorVivo() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -130,19 +136,32 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
+        }else{
+            googleMap.setMyLocationEnabled(true);
+            // Check if we were successful in obtaining the map.
+            if (googleMap != null) {
+                googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+                    @Override
+                    public void onMyLocationChange(Location coordenadas) {
+                        if(switchcoor)
+                            MoverYo(coordenadas.getLatitude(), coordenadas.getLongitude(), 10);
+                        switchcoor=false;
+
+                    }
+                });
+            }
         }
-        googleMap.setMyLocationEnabled(true);
-        // Check if we were successful in obtaining the map.
-        if (googleMap != null) {
-            googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
-                @Override
-                public void onMyLocationChange(Location arg0) {
+
+    }
+
+    private void MoverYo(double latitude, double longitude, int altura) {
+        LatLng coordenadas = new LatLng(latitude, longitude);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, altura));
+    }
 
 
-                }
-            });
-        }
-
+    public void CargarListayMarcar(){
+        ///Cargamos la lista de emergencias y llenamos un arreglo para marcar las ubicaciones
 
         firebaseDatabase = FirebaseDatabase.getInstance();
         databaseReference = firebaseDatabase.getReference("EmergenciaVecinos-"+funciones.GetIdGrupo());//Sala de chat
@@ -153,24 +172,21 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 funciones.Logo("Emergencia", snapshot.getValue()+"");
                 Emergencias emergencia=snapshot.getValue(Emergencias.class);
-                emergencias.add(new Emergencias(emergencia.getId_emergencia(),emergencia.getId_usuario(),emergencia.getNombre(),emergencia.getMensaje(),emergencia.getUbicacion(),emergencia.getFecha() ));
+                emergencias.add(0,new Emergencias(emergencia.getId_emergencia(),emergencia.getId_usuario(),emergencia.getNombre(),emergencia.getMensaje(),emergencia.getUbicacion(),emergencia.getFecha() ));
+                emergencias_lista.setLayoutManager(new LinearLayoutManager(context));
+                emergencias_lista.setAdapter(new AdapterEmergencias(emergencias,algo));
+
                 //Marcando una por una
                 JSONObject ubicaciont= null;
                 try {
                     ubicaciont = new JSONObject(emergencia.getUbicacion());
-                    String[] coordenadas=ubicaciont.getString("ubicacion").split(",");
-                    Marcar(emergencia.getNombre(),
-                            Double.parseDouble(coordenadas[0]),
-                            Double.parseDouble((coordenadas[1])));
+                    Marcar(emergencia.getNombre(),ubicaciont.getString("ubicacion"));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
 
-
-                Collections.reverse(emergencias);
-                emergencias_lista.setLayoutManager(new LinearLayoutManager(context));
-                emergencias_lista.setAdapter(new AdapterEmergencias(emergencias,algo));
 
             }
 
@@ -193,13 +209,9 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
+
         };
         databaseReference.addChildEventListener(listener);
-
-
-
-        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacion,16f));
-
     }
 
     public Boolean PedirPermisoLocation() {
@@ -226,23 +238,18 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
     @Override
     protected void onPostResume() {
         super.onPostResume();
+        emergencias.clear();
+        CargarListayMarcar();
 
     }
 
     @Override
-    public void itemClick(Emergencias emergencias, int position) {
-        tag_nombre.setText(emergencias.getNombre());
+    public void itemClick(Emergencias emergencia, int position) {
         funciones.Vibrar(funciones.VibrarPush());
-        contenedor_verruta.setVisibility(View.VISIBLE);
-
         try {
-            JSONObject ubicaciont=new JSONObject(emergencias.getUbicacion());
-            String[] coordenadas=ubicaciont.getString("ubicacion").split(",");
-            Mover( Double.parseDouble(coordenadas[0]),Double.parseDouble((coordenadas[1])),16);
-            vernombre=emergencias.getNombre();
-            verdireccion=ubicaciont.getString("direccion");
-            verlat=Double.parseDouble(coordenadas[0]);
-            verlon=Double.parseDouble(coordenadas[1]);
+            JSONObject ubicaciont=new JSONObject(emergencia.getUbicacion());
+
+            Mover(emergencia.getNombre(),ubicaciont.getString("direccion"),ubicaciont.getString("ubicacion"), 16);
         } catch (JSONException e) {
             e.printStackTrace();
             Log.i("coordenadas2","Error:" +e.getMessage());
@@ -251,14 +258,35 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    public void Marcar(String nombre, double lat,double lon){
-        Log.i("coordenadas2","lat:"+lat+"    lon:"+lon);
-        LatLng coordenadas = new LatLng(lat, lon);
-        map.addMarker(new MarkerOptions().position(coordenadas).title(nombre)).showInfoWindow();
+    public void Marcar(String nombre, String ubicaciont){
+        String[] ubicacion=ubicaciont.split(",");
+        if(ubicacion.length==2) {
+            String lat=ubicacion[0];
+            String lon=ubicacion[1];
+            LatLng coordenadas = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+            googleMap.addMarker(new MarkerOptions().position(coordenadas).title(nombre)).showInfoWindow();
+        }
+
     }
-    public void Mover(double lat,double lon,float altura){
-        LatLng coordenadas = new LatLng(lat, lon);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas,altura));
+    public void Mover(String nombre,String direccion,String ubicaciont,float altura){
+        String[] ubicacion=ubicaciont.split(",");
+
+        if(ubicacion.length==2){
+            String lat=ubicacion[0];
+            String lon=ubicacion[1];
+            LatLng coordenadas = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, altura));
+            //Datos Para ir
+            tag_nombre.setText(nombre);
+            contenedor_verruta.setVisibility(View.VISIBLE);
+            vernombre=nombre;
+            verdireccion=direccion;
+            verlat=Double.parseDouble(lat);
+            verlon=Double.parseDouble(lon);
+        }else{
+            Toast.makeText(context, "Sin coordenadas.", Toast.LENGTH_SHORT).show();
+            contenedor_verruta.setVisibility(View.GONE);
+        }
     }
 
 }

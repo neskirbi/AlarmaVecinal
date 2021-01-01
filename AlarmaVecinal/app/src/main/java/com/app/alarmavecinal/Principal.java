@@ -145,9 +145,12 @@ public class Principal extends AppCompatActivity
                             Toast.makeText(context, "Se activa Emergencia...", Toast.LENGTH_SHORT).show();
                             String latt="",lont="";
                             try {
-                                JSONObject ubicacion=new JSONObject(funciones.GetUbicacion());
-                                latt=ubicacion.getString("lat");
-                                lont=ubicacion.getString("lon");
+                                if(funciones.GetUbicacion().replace(" ","").length()>0){
+                                    JSONObject ubicacion=new JSONObject(funciones.GetUbicacion());
+                                    latt=ubicacion.getString("lat");
+                                    lont=ubicacion.getString("lon");
+                                }
+
 
                                 //funciones.Conexion("{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\",\"tipo\":\"1\"}",funciones.GetUrl()+getString(R.string.url_SetEmergencia));
                                 firebaseDatabase = FirebaseDatabase.getInstance();
@@ -258,7 +261,7 @@ public class Principal extends AppCompatActivity
     }
 
     private void VerificarUbicacion() {
-        if(!VerificarSwitchGPS()){
+        if(!funciones.VerificarSwitchGPS()){
             nota.setText("Encender GPS.");
             Toast.makeText(context, "Encender GPS.", Toast.LENGTH_SHORT).show();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -424,13 +427,6 @@ public class Principal extends AppCompatActivity
         return true;
     }
 
-    private boolean VerificarSwitchGPS() {
-        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        System.out.println("Provider contains=> " + provider);
-        if (provider.contains("gps") || provider.contains("network")){
-            return true;
-        }
-        return false;
-    }
+
 }
 

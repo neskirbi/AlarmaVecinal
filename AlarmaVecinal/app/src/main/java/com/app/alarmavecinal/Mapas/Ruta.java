@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.app.alarmavecinal.BuildConfig;
 import com.app.alarmavecinal.Estructuras.DirectionsJSONParser;
+import com.app.alarmavecinal.Funciones;
 import com.app.alarmavecinal.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -63,6 +64,8 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     int cont=0;
     GoogleMap googleMap;
     private Polyline mPolyline;
+    Funciones funciones;
+    Context context;
 
 
     private SensorManager sensorManager;
@@ -76,6 +79,8 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ruta);
+        context=this;
+        funciones=new Funciones(context);
 
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
@@ -131,9 +136,6 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMapt) {
-
-
-
         googleMap = googleMapt;
         googleMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(nombre));
 
@@ -152,8 +154,12 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
             // Check if we were successful in obtaining the map.
             if (googleMap != null) {
                 googleMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
+
                     @Override
                     public void onMyLocationChange(Location arg0) {
+                        if(funciones.VerificarSwitchGPS()&& findViewById(R.id.nota).getVisibility()==View.VISIBLE){
+                            findViewById(R.id.nota).setVisibility(View.GONE);
+                        }
                         latabs=arg0.getLatitude();
                         lonabs=arg0.getLongitude();
 
@@ -357,40 +363,10 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     protected void onPostResume() {
         super.onPostResume();
-/*
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-        } else {
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-
-                    latl.add(location.getLatitude());
-                    lonl.add(location.getLongitude());
-                    Parar();
-                    cont++;
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-
-                }
-            };
+        if(!funciones.VerificarSwitchGPS()){
+            findViewById(R.id.nota).setVisibility(View.VISIBLE);
         }
-        if (locationListener != null) {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10, 100, locationListener);
-        }*/
+
     }
 
     private void Trazar() {
