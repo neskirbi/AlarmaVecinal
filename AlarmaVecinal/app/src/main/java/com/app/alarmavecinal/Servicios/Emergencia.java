@@ -58,19 +58,22 @@ public class Emergencia extends Service {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 //funciones.Logo("Emergencialistener", snapshot.getValue()+"");
                 Emergencias emergencia=snapshot.getValue(Emergencias.class);
-                funciones.Logo("Emergencialistener", "Eshoy:"+funciones.EsHoy(emergencia.getFecha())+"   Esunminuto:"+funciones.EsUnMinuto(emergencia.getFecha()));
-                if(funciones.EsHoy(emergencia.getFecha()) && funciones.EsUnMinuto(emergencia.getFecha())){
-                    try {
 
-                        JSONObject ubicacion=new JSONObject(emergencia.getUbicacion());
-                        String body=emergencia.getNombre()+"\n"+ubicacion.get("direccion");
-                        Sonar(body,emergencia.getNombre(),ubicacion.get("direccion").toString(),ubicacion.get("ubicacion").toString());
+                if(!funciones.ChecarIdEmergencia(emergencia.getId_emergencia())) {
+                    funciones.GuardarIdEmergencia(emergencia.getId_emergencia());
+                    if (funciones.EsHoy(emergencia.getFecha()) && funciones.EsUnMinuto(emergencia.getFecha())) {
+                        try {
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        funciones.Logo("Emergencialistener", "Errrror:"+e.getMessage());
+                            JSONObject ubicacion = new JSONObject(emergencia.getUbicacion());
+                            String body = emergencia.getNombre() + "\n" + ubicacion.get("direccion");
+                            Sonar(body, emergencia.getNombre(), ubicacion.get("direccion").toString(), ubicacion.get("ubicacion").toString());
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            funciones.Logo("Emergencialistener", "Errrror:" + e.getMessage());
+                        }
+
                     }
-
                 }
             }
 
