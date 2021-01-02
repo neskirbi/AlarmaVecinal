@@ -74,9 +74,14 @@
     //Poner llave googlemaps
     <string name="google_maps_key">AIzaSRD1UpmBYBueQcmF_zwJ_iakT0CUXpRRDlQ</string>
 
-    <string name="id_banner">ca-app-pub-9864387520697583/7035351219</string>
+    <string name="id_banner_p">ca-app-pub-9864387520697583/7035351219</string>
     <!--para la version de produccion debe tener la _p el de abajo-->
-    <string name="id_banner_p">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="id_banner">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="title_activity_ayuda_grupo_tab">AyudaGrupoTab</string>
+    <string name="tab_text_1">Crear</string>
+    <string name="tab_text_2">Unirse</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

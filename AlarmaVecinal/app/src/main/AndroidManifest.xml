@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -29,7 +29,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Mapas.Ruta"></activity>
+        <activity
+            android:name=".Tabs.AyudaGrupoTab"
+            android:label="@string/title_activity_ayuda_grupo_tab"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".Variado.AyudaGrupo" />
+        <activity android:name=".Mapas.Ruta" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -81,7 +86,8 @@
             android:name=".FuncionAlertas.AlertasLista"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Grupos.Escaner" />
-        <activity android:name=".Grupos.Grupo"
+        <activity
+            android:name=".Grupos.Grupo"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -134,14 +140,6 @@
             android:exported="true" />
         <service
             android:name=".Servicios.Notificador"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".Servicios.Enviador"
-            android:enabled="true"
-            android:exported="true" />
-        <service
-            android:name=".Servicios.ServiceAlerta"
             android:enabled="true"
             android:exported="true" />
         <service

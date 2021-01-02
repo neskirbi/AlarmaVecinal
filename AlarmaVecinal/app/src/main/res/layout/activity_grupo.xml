@@ -7,6 +7,19 @@
     android:layout_height="match_parent"
     tools:context=".Grupos.Grupo">
 
+    <TextView
+        android:id="@+id/nota"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="nota"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="60dp"
+        android:textSize="20dp"
+        android:padding="5dp"
+        android:background="#302C2C"
+        android:textColor="#ffffff"
+        android:visibility="gone"/>
+
     <LinearLayout
         android:id="@+id/menu"
         android:layout_width="wrap_content"
@@ -20,6 +33,15 @@
         android:paddingBottom="15dp"
         android:background="@drawable/redondeado"
         android:visibility="gone">
+
+        <TextView
+            android:id="@+id/menu_ayuda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ayuda"
+            android:textSize="15dp"
+            android:layout_marginTop="15dp"
+            android:textStyle="bold"/>
 
 
         <TextView
@@ -85,23 +107,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_gravity="center_horizontal|center_vertical">
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:visibility="visible">
 
         <LinearLayout
             android:onClick="Pop"
             android:id="@+id/crear"
-            android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
             android:background="@drawable/boton_crear_grupo"
-            android:text="+ Crear Grupo"
-            android:textColor="#fff"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:padding="5dp"
             >
 
             <ImageView
@@ -111,7 +127,8 @@
 
             <TextView
                 android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Crear Grupo"
                 android:textSize="20dp"
@@ -121,18 +138,11 @@
         <LinearLayout
             android:onClick="Leer"
             android:id="@+id/unirse"
-            android:gravity="center_horizontal"
             android:orientation="horizontal"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal|center_vertical"
             android:background="@drawable/boton_crear_grupo"
-            android:text="+ Crear Grupo"
-            android:textColor="#fff"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
+            android:padding="5dp"
             android:layout_marginTop="30dp"
             >
 
@@ -145,9 +155,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Unirse Grupo"
+                android:text="Escanear Código QR"
                 android:textSize="20dp"
-                android:layout_marginLeft="10dp"/>
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="5dp"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -156,11 +167,20 @@
 
     <LinearLayout
         android:id="@+id/grupo_lay"
-        android:visibility="invisible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="60dp"
+        android:layout_marginBottom="60dp"
+        android:visibility="gone">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FF5722"
+            android:text="Por favor, alinear el codigo QR frente al otro dispositivo"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"/>
 
 
         <ImageView
@@ -168,36 +188,34 @@
             android:layout_width="200dp"
             android:layout_height="200dp"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/img_menu_grupo"
-            android:layout_marginTop="100dp"/>
+            android:src="@drawable/imgqr"
+            android:layout_marginTop="20dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:text="(Escanear)" />
+            android:text="El codigo QR se escanea con el equipo del vecino que quiere agragar al grupo.\nTambien puede compartir el codigo por."
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:gravity="center"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <ImageView
+            android:onClick="CompartirWats"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginTop="100dp">
-            <ImageView
-                android:onClick="CompartirWats"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/logo_whats"/>
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/compartirwhats"
+            android:layout_marginTop="20dp"/>
 
-            <!--<ImageView
-                android:onClick="CompartirFace"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_gravity="center_horizontal"
-                android:src="@drawable/logo_face"
-                android:layout_marginLeft="50dp"/>-->
-        </LinearLayout>
+        <!--<ImageView
+            android:onClick="CompartirFace"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/logo_face"
+            android:layout_marginLeft="50dp"/>-->
 
         <!-- <TextView
              android:layout_width="wrap_content"

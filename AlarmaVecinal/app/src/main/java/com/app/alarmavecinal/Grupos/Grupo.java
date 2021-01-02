@@ -30,6 +30,8 @@ import com.app.alarmavecinal.BuildConfig;
 import com.app.alarmavecinal.Funciones;
 import com.app.alarmavecinal.Principal;
 import com.app.alarmavecinal.R;
+import com.app.alarmavecinal.Tabs.AyudaGrupoTab;
+import com.app.alarmavecinal.Variado.AyudaGrupo;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -42,13 +44,14 @@ public class Grupo extends AppCompatActivity {
     Context context;
     ImageView QR;
     String SQR="";
-    TextView titulogrupo,menu_salir;
+    TextView titulogrupo,menu_salir,menu_ayuda;
+    LinearLayout menu;
+    TextView nota;
 
     private static final int CODIGO_PERMISOS_CAMARA = 1, CODIGO_INTENT = 2;
     private boolean permisoCamaraConcedido = false, permisoSolicitadoDesdeBoton = false;
     private View abrir_menu;
     private View dummy;
-    LinearLayout menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +64,7 @@ public class Grupo extends AppCompatActivity {
         dummy=findViewById(R.id.dummy);
         menu=findViewById(R.id.menu);
         menu_salir=findViewById(R.id.menu_salir);
-
+        menu_ayuda=findViewById(R.id.menu_ayuda);
 
         MobileAds.initialize(this);
         AdView m = findViewById(R.id.banner);
@@ -81,10 +84,18 @@ public class Grupo extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 funciones.Vibrar(funciones.VibrarPush());
-                menu.setVisibility(View.VISIBLE);
                 dummy.setVisibility(View.VISIBLE);
                 dummy.bringToFront();
+                menu.setVisibility(View.VISIBLE);
                 menu.bringToFront();
+            }
+        });
+
+        menu_ayuda.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                funciones.Vibrar(funciones.VibrarPush());
+                startActivity(new Intent(context, AyudaGrupoTab.class));
             }
         });
 
@@ -106,6 +117,9 @@ public class Grupo extends AppCompatActivity {
     }
 
     public void OcultarMenu(){
+        findViewById(R.id.menu_salir).setVisibility(View.GONE);
+        findViewById(R.id.menu_grupo).setVisibility(View.GONE);
+        findViewById(R.id.menu_ayuda).setVisibility(View.VISIBLE);
         menu.setVisibility(View.GONE);
         dummy.setVisibility(View.GONE);
     }
@@ -120,7 +134,7 @@ public class Grupo extends AppCompatActivity {
             QuitarBotton();
             QR.setImageBitmap(funciones.GetQR(SQR));
             titulogrupo.setText(funciones.GetNombreGrupo());
-            Toast.makeText(context, "Escanear QR para unirse al grupo.", Toast.LENGTH_SHORT).show();
+            findViewById(R.id.menu).setVisibility(View.VISIBLE);
         }else{
             try {
                 Intent intent = getIntent();
@@ -137,12 +151,12 @@ public class Grupo extends AppCompatActivity {
     }
 
     public void Pop(View view) {
-
+        funciones.Vibrar(funciones.VibrarPush());
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(Grupo.this);
         alertDialog.setTitle("Crear Grupo");
         alertDialog.setMessage("Nombre del grupo?");
 
-        final EditText nombre = new EditText(Grupo.this);
+        final EditText nombre = new EditText(context);
         nombre.setHint("Nombre");
         nombre.setFilters(new InputFilter[]{new InputFilter.LengthFilter(150)});
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
@@ -161,6 +175,8 @@ public class Grupo extends AppCompatActivity {
                         QR.setImageBitmap(funciones.GetQR(SQR));
                         titulogrupo.setText(funciones.GetNombreGrupo());
                         QuitarBotton();
+                        funciones.ForzarEnviador();
+                        //funciones.VerificarEnviado(findViewById(R.id.nota));
 
 
                     }
@@ -182,9 +198,15 @@ public class Grupo extends AppCompatActivity {
 
         botones.setVisibility(View.GONE);
         grupo_lay.setVisibility(View.VISIBLE);
+        findViewById(R.id.menu_salir).setVisibility(View.VISIBLE);
+        findViewById(R.id.menu_grupo).setVisibility(View.VISIBLE);
+        findViewById(R.id.menu_ayuda).setVisibility(View.VISIBLE);
     }
 
+
+
     public void Leer(View view){
+        funciones.Vibrar(funciones.VibrarPush());
         if(PedirPermiso()) {
             escanear();
         }
@@ -192,6 +214,7 @@ public class Grupo extends AppCompatActivity {
 
 
     public void escanear() {
+
         Intent i = new Intent(Grupo.this, Escaner.class);
         startActivityForResult(i, CODIGO_INTENT);
     }
@@ -276,6 +299,7 @@ public class Grupo extends AppCompatActivity {
     }
 
     public void CompartirWats(View view){
+        funciones.Vibrar(funciones.VibrarPush());
         Intent whatsappIntent = new Intent(Intent.ACTION_SEND);
         whatsappIntent.setType("text/plain");
         whatsappIntent.setPackage("com.whatsapp");

@@ -1,6 +1,5 @@
 package com.app.alarmavecinal;
 
-import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.NotificationChannel;
@@ -11,15 +10,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -27,7 +22,6 @@ import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.StrictMode;
 import android.os.Vibrator;
@@ -39,16 +33,12 @@ import android.widget.ImageView;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 
-import com.app.alarmavecinal.Debug.VisorTexto;
 import com.app.alarmavecinal.Grupos.Grupo;
 import com.app.alarmavecinal.LoginPack.Login;
 import com.app.alarmavecinal.Servicios.Emergencia;
-import com.app.alarmavecinal.Servicios.Enviador;
 import com.app.alarmavecinal.Servicios.Notificador;
-import com.app.alarmavecinal.Servicios.ServiceAlerta;
 import com.app.alarmavecinal.Sqlite.Base;
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -71,7 +61,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -99,6 +88,9 @@ public class Funciones {
 
     public Funciones(Context context) {
         this.context = context;
+        //verificando envios cada que se carga una activiti
+        new Enviador(this.context).executeOnExecutor(threadPoolExecutor);
+
     }
 
     public void VerificaConexion(){
@@ -330,12 +322,9 @@ public class Funciones {
 
     }
     public void StopServiceAlertas(){
-        context.stopService(new Intent(context.getApplicationContext(), ServiceAlerta.class));
-        context.stopService(new Intent(context.getApplicationContext(), Enviador.class));
 
-        /////nuevos servicios de firebase
-        context.stopService(new Intent(context.getApplicationContext(), Emergencia.class));
-        context.stopService(new Intent(context.getApplicationContext(), Notificador.class));
+        DetenerServicioEmergencias();
+        DetenerServicioNotificador();
     }
     public void VerificarServicios(){
         if (GetIdGrupo().replace(" ", "").length() == 32) {
@@ -345,7 +334,6 @@ public class Funciones {
             DetenerServicioEmergencias();
             DetenerServicioNotificador();
         }
-        IniciarServicioEnviador();
 
     }
 
@@ -380,18 +368,7 @@ public class Funciones {
         }
     }
 
-    private void IniciarServicioEnviador() {
-        if (!isMyServiceRunning(Enviador.class, context) && Check_Log()) {
-            Intent service2 = new Intent(context, Enviador.class);
-            service2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(service2);
-            }
-            context.startService(service2);
 
-
-        }
-    }
 
 
 
@@ -664,6 +641,7 @@ public class Funciones {
     }
 
     public void EnviarGrupo() {
+        Logo("Enviador","Enviando...");
 
         String id_grupo="",id_usuario="",nombre="",response="[]";
 
@@ -697,6 +675,28 @@ public class Funciones {
 
 
 
+
+    }
+
+    public boolean IsGrupoEnviado() {
+        try {
+            Base base = new Base(context);
+            SQLiteDatabase db = base.getWritableDatabase();
+
+            Cursor c =  db.rawQuery("SELECT * from grupo where enviado='0' ",null);
+            if(c.getCount()>0){
+                return true;
+
+            }else{
+
+            }
+            c.close();
+            db.close();
+        } catch (Exception e) {
+        }
+
+
+        return  false;
 
     }
 
@@ -1215,11 +1215,8 @@ public class Funciones {
     }
 
 
-    public void VerTexto(String texto){
-        context.startActivity(new Intent(context, VisorTexto.class).putExtra("string",texto));
-    }
-
     public void CheckGrupo(){
+        Logo("Enviador","Checando...");
         String respuesta=Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\"}",GetUrl()+context.getString(R.string.url_CheckGrupo));
         try {
             JSONArray jsonArray = new JSONArray(respuesta);
@@ -1505,6 +1502,8 @@ public class Funciones {
 
         notificationManager.notify(id, notificationBuilder.build());
     }
+
+
     class DescargaAsynk extends AsyncTask {
         String urls;
         String path;
@@ -1612,64 +1611,8 @@ public class Funciones {
         return taskInfo.get(0).topActivity.getClassName();
     }
 
-    //////////////Localizacion
-
-    LocationManager locationManager = null;
-    LocationListener locationListener = null;
-    Double Lat , Lon ;
-    ArrayList<Double> lat=new ArrayList<>(),lon=new ArrayList<>();
-    Boolean ciclo;
 
 
-    public String Localizacion(){
-        String ubicacion="";
-        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                lat.add(location.getLatitude());
-                lon.add(location.getLongitude());
-
-            }
-
-            @Override
-            public void onStatusChanged(String provider, int status, Bundle extras) {
-
-            }
-
-            @Override
-            public void onProviderEnabled(String provider) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String provider) {
-
-            }
-
-        };
-
-        // Register the listener with the Location Manager to receive location updates
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-        }else{
-            boolean gps_enabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            boolean network_enabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-            if (gps_enabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            }else if (network_enabled) {
-                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-            }
-
-
-        }
-
-
-        return ubicacion;
-
-    }
 
     public void SetUbicacion(String ubicacion){
         Base base = new Base(context);
@@ -1731,6 +1674,85 @@ public class Funciones {
         }
         return false;
     }
+
+    public class Enviador extends AsyncTask {
+
+        Context context;
+
+        public Enviador(Context context) {
+            this.context=context;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+            EnviarGrupo();
+            CheckGrupo();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+        }
+    }
+
+    public void ForzarEnviador(){
+        new Enviador(this.context).executeOnExecutor(threadPoolExecutor);
+
+    }
+
+
+    public class VerificarEnviado extends AsyncTask {
+
+        View viewById;
+
+        public VerificarEnviado(View viewById) {
+            this.viewById=viewById;
+        }
+
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onProgressUpdate(Object[] values) {
+            super.onProgressUpdate(values);
+            if(IsGrupoEnviado()){
+                viewById.setVisibility(View.GONE);
+            }else{
+                viewById.setVisibility(View.GONE);
+            }
+
+        }
+
+        @Override
+        protected Object doInBackground(Object[] objects) {
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Object o) {
+            super.onPostExecute(o);
+        }
+    }
+
+
 }
+
+
 
 

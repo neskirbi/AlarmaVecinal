@@ -34,16 +34,7 @@ public class Lanzador extends BroadcastReceiver {
 
             }
         }
-        if (!funciones.isMyServiceRunning(Enviador.class, context) && funciones.Check_Log()) {
-            Intent service2 = new Intent(context, Enviador.class);
-            service2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(service2);
-            }
-            context.startService(service2);
-
-
-        }
+      
 
 
     }

@@ -396,5 +396,3 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     }
 }
 
-//https://maps.googleapis.com/maps/api/directions/json?origin=19.49202381,-99.0957779&destination=19.494023809,-99.0937779&key=AIzaSyD1UpmBYBueQcmF_zwJ_iakT0CUXpyyDlQ
-//https://maps.googleapis.com/maps/api/directions/json?origin=19.49202755,-99.09577831&destination=19.49402755,-99.09377831&key=AIzaSyD1UpmBYBueQcmF_zwJ_iakT0CUXpyyDlQ
