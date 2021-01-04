@@ -60,7 +60,7 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
     ArrayList<Emergencias> emergencias = new ArrayList<>();
     private MapaEmergencia algo;
     private GoogleMap googleMap;
-    double verlat = 0.0, verlon = 0.0;
+    String verlat = "", verlon = "";
     String vernombre = "", verdireccion = "";
     boolean switchcoor=true;
 
@@ -104,13 +104,10 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public void onClick(View v) {
                 funciones.Vibrar(funciones.VibrarPush());
-                if (verlat != 0.0 || verlon != 0.0) {
-                    if(funciones.VerificarSwitchGPS()){
-                        PedirPermisoLocation();
-                    }else{
-                        Toast.makeText(context, "Encender GPS.", Toast.LENGTH_SHORT).show();
-                    }
-
+                if(funciones.VerificarSwitchGPS()){
+                    PedirPermisoLocation();
+                }else{
+                    Toast.makeText(context, "Encender GPS.", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -271,21 +268,25 @@ public class MapaEmergencia extends AppCompatActivity implements OnMapReadyCallb
     public void Mover(String nombre,String direccion,String ubicaciont,float altura){
         String[] ubicacion=ubicaciont.split(",");
 
+        tag_nombre.setText(nombre);
+        contenedor_verruta.setVisibility(View.VISIBLE);
+        vernombre=nombre;
+        verdireccion=direccion;
+
         if(ubicacion.length==2){
             String lat=ubicacion[0];
             String lon=ubicacion[1];
             LatLng coordenadas = new LatLng(Double.parseDouble(lat), Double.parseDouble(lon));
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordenadas, altura));
             //Datos Para ir
-            tag_nombre.setText(nombre);
-            contenedor_verruta.setVisibility(View.VISIBLE);
-            vernombre=nombre;
-            verdireccion=direccion;
-            verlat=Double.parseDouble(lat);
-            verlon=Double.parseDouble(lon);
+
+            verlat=lat;
+            verlon=lon;
         }else{
             Toast.makeText(context, "Sin coordenadas.", Toast.LENGTH_SHORT).show();
-            contenedor_verruta.setVisibility(View.GONE);
+            //contenedor_verruta.setVisibility(View.GONE);
+            verlat="";
+            verlon="";
         }
     }
 

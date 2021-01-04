@@ -37,6 +37,12 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 public class Grupo extends AppCompatActivity {
     LinearLayout crear,unirse,botones;
     LinearLayout grupo_lay;
@@ -46,12 +52,20 @@ public class Grupo extends AppCompatActivity {
     String SQR="";
     TextView titulogrupo,menu_salir,menu_ayuda;
     LinearLayout menu;
-    TextView nota;
+    static TextView nota;
 
     private static final int CODIGO_PERMISOS_CAMARA = 1, CODIGO_INTENT = 2;
     private boolean permisoCamaraConcedido = false, permisoSolicitadoDesdeBoton = false;
     private View abrir_menu;
     private View dummy;
+
+    int corePoolSize = 60;
+    int maximumPoolSize = 80;
+    int keepAliveTime = 10;
+
+    BlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<Runnable>(maximumPoolSize);
+    Executor threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.SECONDS, workQueue);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +79,8 @@ public class Grupo extends AppCompatActivity {
         menu=findViewById(R.id.menu);
         menu_salir=findViewById(R.id.menu_salir);
         menu_ayuda=findViewById(R.id.menu_ayuda);
-
+        nota=findViewById(R.id.nota);
+        SQR=funciones.GetIdGrupo();
         MobileAds.initialize(this);
         AdView m = findViewById(R.id.banner);
         AdRequest adRequest = null;
@@ -84,10 +99,7 @@ public class Grupo extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 funciones.Vibrar(funciones.VibrarPush());
-                dummy.setVisibility(View.VISIBLE);
-                dummy.bringToFront();
-                menu.setVisibility(View.VISIBLE);
-                menu.bringToFront();
+                MostrarMenu();
             }
         });
 
@@ -114,27 +126,50 @@ public class Grupo extends AppCompatActivity {
             }
         });
 
+
+
     }
 
+    public void MostrarMenu(){
+
+        dummy.setVisibility(View.VISIBLE);
+        dummy.bringToFront();
+        menu.setVisibility(View.VISIBLE);
+        menu.bringToFront();
+    }
+
+
     public void OcultarMenu(){
-        findViewById(R.id.menu_salir).setVisibility(View.GONE);
-        findViewById(R.id.menu_grupo).setVisibility(View.GONE);
-        findViewById(R.id.menu_ayuda).setVisibility(View.VISIBLE);
+
         menu.setVisibility(View.GONE);
         dummy.setVisibility(View.GONE);
     }
 
+    public void OcultarItemsMenu(){
+        findViewById(R.id.menu_salir).setVisibility(View.GONE);
+        findViewById(R.id.menu_grupo).setVisibility(View.GONE);
+    }
+
+    public void MostrarItemsMenu(){
+        findViewById(R.id.menu_salir).setVisibility(View.VISIBLE);
+        findViewById(R.id.menu_grupo).setVisibility(View.VISIBLE);
+    }
+
     @Override
     protected void onResume() {
+
         super.onResume();
+        if(!funciones.IsGrupoEnviado() && SQR!=""){
+            funciones.CorrerVerificarEnviado(nota);
+        }
         OcultarMenu();
         funciones.VerificarServicios();
-        SQR=funciones.GetIdGrupo();
         if(SQR!=""){
+
             QuitarBotton();
             QR.setImageBitmap(funciones.GetQR(SQR));
             titulogrupo.setText(funciones.GetNombreGrupo());
-            findViewById(R.id.menu).setVisibility(View.VISIBLE);
+            MostrarItemsMenu();
         }else{
             try {
                 Intent intent = getIntent();
@@ -147,6 +182,7 @@ public class Grupo extends AppCompatActivity {
             }catch (Exception e){
                 Log.i("Getgrupo",e.getMessage().toString());
             }
+            OcultarItemsMenu();
         }
     }
 
@@ -176,7 +212,8 @@ public class Grupo extends AppCompatActivity {
                         titulogrupo.setText(funciones.GetNombreGrupo());
                         QuitarBotton();
                         funciones.ForzarEnviador();
-                        //funciones.VerificarEnviado(findViewById(R.id.nota));
+                        MostrarItemsMenu();
+                        funciones.CorrerVerificarEnviado(nota);
 
 
                     }
@@ -266,7 +303,7 @@ public class Grupo extends AppCompatActivity {
             if(SQR!=""){
                 QuitarBotton();
                 QR.setImageBitmap(funciones.GetQR(SQR));
-                setTitle(funciones.GetNombreGrupo());
+                titulogrupo.setText(funciones.GetNombreGrupo());
             }else{
                 Toast.makeText(context, "Error al crear el grupo.", Toast.LENGTH_SHORT).show();
             }

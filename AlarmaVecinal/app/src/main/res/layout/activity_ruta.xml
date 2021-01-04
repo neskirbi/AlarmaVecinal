@@ -17,18 +17,7 @@
         tools:context="com.example.mapwithmarker.MapsMarkerActivity"
         android:layout_marginBottom="60dp"/>
 
-    <TextView
-        android:id="@+id/contenedor_direccion"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="60dp"
-        android:text="Direccion:"
-        android:padding="5dp"
-        android:textSize="18dp"
-        android:textStyle="bold"
-        android:textColor="#000000"
-        android:background="@drawable/redondeado"/>
+
 
     <TextView
         android:id="@+id/nota"
@@ -41,6 +30,19 @@
         android:background="@drawable/redondeado"
         android:padding="10dp"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/contenedor_direccion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cargando dirección..."
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="60dp"
+        android:padding="5dp"
+        android:textSize="19dp"
+        android:background="#302C2C"
+        android:textColor="#ffffff"
+        android:visibility="visible"/>
 
     <com.google.android.gms.ads.AdView
         android:id="@+id/banner"

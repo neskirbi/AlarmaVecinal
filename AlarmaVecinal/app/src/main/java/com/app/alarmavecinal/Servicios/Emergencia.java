@@ -58,10 +58,10 @@ public class Emergencia extends Service {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 //funciones.Logo("Emergencialistener", snapshot.getValue()+"");
                 Emergencias emergencia=snapshot.getValue(Emergencias.class);
+                if (funciones.EsHoy(emergencia.getFecha()) && funciones.EsUnMinuto(emergencia.getFecha())) {
+                    if(!funciones.ChecarIdEmergencia(emergencia.getId_emergencia())) {
+                        funciones.GuardarIdEmergencia(emergencia.getId_emergencia());
 
-                if(!funciones.ChecarIdEmergencia(emergencia.getId_emergencia())) {
-                    funciones.GuardarIdEmergencia(emergencia.getId_emergencia());
-                    if (funciones.EsHoy(emergencia.getFecha()) && funciones.EsUnMinuto(emergencia.getFecha())) {
                         try {
 
                             JSONObject ubicacion = new JSONObject(emergencia.getUbicacion());
@@ -122,7 +122,13 @@ public class Emergencia extends Service {
             alarma.start();
             funciones.Logo("volumen","corriendo");
         }
-        startActivity(new Intent(context,MapaEmergencia.class).putExtra("nombre",nombre).putExtra("direccion",direccion).putExtra("ubicacion",ubicacion).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        if(!funciones.GetCurrentActivity().contains("MapaEmergencia")){
+            if(!funciones.GetCurrentActivity().contains("Ruta")){
+
+                startActivity(new Intent(context,MapaEmergencia.class).putExtra("nombre",nombre).putExtra("direccion",direccion).putExtra("ubicacion",ubicacion).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            }
+        }
+
     }
 
     @Override

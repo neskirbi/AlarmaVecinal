@@ -15,6 +15,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
@@ -53,6 +55,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -63,6 +66,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -88,8 +92,8 @@ public class Funciones {
 
     public Funciones(Context context) {
         this.context = context;
-        //verificando envios cada que se carga una activiti
-        new Enviador(this.context).executeOnExecutor(threadPoolExecutor);
+        //verificando envios cada que se carga una activity
+        new Enviador().executeOnExecutor(threadPoolExecutor);
 
     }
 
@@ -550,7 +554,7 @@ public class Funciones {
     }
 
     public Bitmap GetQR(String texto){
-        Bitmap bitmap = QRCode.from(texto).bitmap();
+        Bitmap bitmap = QRCode.from(texto).withSize(500,500).bitmap();
         return bitmap;
     }
 
@@ -683,7 +687,7 @@ public class Funciones {
             Base base = new Base(context);
             SQLiteDatabase db = base.getWritableDatabase();
 
-            Cursor c =  db.rawQuery("SELECT * from grupo where enviado='0' ",null);
+            Cursor c =  db.rawQuery("SELECT * from grupo where enviado='1' ",null);
             if(c.getCount()>0){
                 return true;
 
@@ -732,7 +736,7 @@ public class Funciones {
             Cursor c =  db.rawQuery("SELECT * from chat_notifica where id_mensaje='"+id_mensaje+"' ",null);
             c.moveToFirst();
             if(c.getCount()>0){
-               bandera = true;
+                bandera = true;
             }
             c.close();
             db.close();
@@ -1504,18 +1508,49 @@ public class Funciones {
     }
 
 
+    public String GetDireccionAntes() {
+        double lat;
+        double lon;
+
+        Geocoder geocoder=  new Geocoder(context, Locale.getDefault());
+        List<Address> direccion = null;
+        try {
+            JSONObject ubicacion=new JSONObject(GetUbicacion());
+            lat=Double.parseDouble(ubicacion.getString("lat"));
+            lon=Double.parseDouble(ubicacion.getString("lon"));
+            direccion = geocoder.getFromLocation(lat, lon, 1);
+            return direccion.get(0).getAddressLine(0);
+        } catch (Exception e) {
+
+        }
+        return "Sin datos";
+    }
+
+    public String GetDireccionAhora(double lat, double lon) {
+        Geocoder geocoder=  new Geocoder(context, Locale.getDefault());
+        List<Address> direccion = null;
+        try {
+            direccion = geocoder.getFromLocation(lat, lon, 1);
+            return direccion.get(0).getAddressLine(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "Sin datos";
+    }
+
+
     class DescargaAsynk extends AsyncTask {
         String urls;
         String path;
         ImageView imageView;
-        
+
         DescargaAsynk(String urls, String path,ImageView imageView){
 
 
             this.urls=urls;
             this.path=path;
             this.imageView=imageView;
-            
+
         }
 
         @Override
@@ -1549,7 +1584,7 @@ public class Funciones {
                 if(!filef.exists()){
                     StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
                     StrictMode.setThreadPolicy(policy);
-                    
+
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.setDoOutput(true);
@@ -1594,7 +1629,7 @@ public class Funciones {
             }
             publishProgress();
 
-            
+
             return null;
         }
     }
@@ -1602,7 +1637,7 @@ public class Funciones {
 
 
     public void UpdatefbToken(){
-            Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\",\"fbtoken\":\""+ FirebaseInstanceId.getInstance().getToken()+""+"\"}",GetUrl()+context.getResources().getString(R.string.url_UpdatefbToken));
+        Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\",\"fbtoken\":\""+ FirebaseInstanceId.getInstance().getToken()+""+"\"}",GetUrl()+context.getResources().getString(R.string.url_UpdatefbToken));
     }
 
     public String GetCurrentActivity(){
@@ -1650,6 +1685,8 @@ public class Funciones {
         return false;
     }
 
+
+    int horasegundos=3600,minutosegundos=60;
     public int ObtenerSegundosDif(String horanew,String horaold){
         Logo("tiempodifereicnci",horanew+": "+ObtenerSegundos(horanew)+"---"+ObtenerSegundos(horaold)+": "+horaold);
         return ObtenerSegundos(horanew)-ObtenerSegundos(horaold);
@@ -1657,8 +1694,11 @@ public class Funciones {
     }
     public int ObtenerSegundos(String hora){
         String[] tiempo=hora.split(":");
-        return (Integer.parseInt(tiempo[0])*3600)+(Integer.parseInt(tiempo[1])*60)+Integer.parseInt(tiempo[2]);
+        return (Integer.parseInt(tiempo[0])*horasegundos)+(Integer.parseInt(tiempo[1])*minutosegundos)+Integer.parseInt(tiempo[2]);
     }
+
+
+
     public boolean EsHoy(String fecha){
         String[] fechanow=GetDate().split(" "),fechaold=fecha.split(" ");
 
@@ -1675,24 +1715,17 @@ public class Funciones {
         return false;
     }
 
+
+
     public class Enviador extends AsyncTask {
 
-        Context context;
 
-        public Enviador(Context context) {
-            this.context=context;
+
+        public Enviador() {
+
         }
 
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected void onProgressUpdate(Object[] values) {
-            super.onProgressUpdate(values);
-        }
 
         @Override
         protected Object doInBackground(Object[] objects) {
@@ -1708,12 +1741,18 @@ public class Funciones {
     }
 
     public void ForzarEnviador(){
-        new Enviador(this.context).executeOnExecutor(threadPoolExecutor);
+        new Enviador().executeOnExecutor(threadPoolExecutor);
 
     }
 
+    public void CorrerVerificarEnviado(View viewById){
+        new VerificarEnviado(viewById).executeOnExecutor(threadPoolExecutor);
+    }
+
+
 
     public class VerificarEnviado extends AsyncTask {
+        boolean Flag=true;
 
         View viewById;
 
@@ -1721,26 +1760,32 @@ public class Funciones {
             this.viewById=viewById;
         }
 
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
         @Override
         protected void onProgressUpdate(Object[] values) {
             super.onProgressUpdate(values);
             if(IsGrupoEnviado()){
                 viewById.setVisibility(View.GONE);
+                Logo("VerificarEnviado","si");
+                Flag=false;
             }else{
-                viewById.setVisibility(View.GONE);
+                viewById.setVisibility(View.VISIBLE);
+                Logo("VerificarEnviado","no");
+                ForzarEnviador();
             }
+
 
         }
 
         @Override
         protected Object doInBackground(Object[] objects) {
-
+            while (Flag){
+               publishProgress();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             return null;
         }
 

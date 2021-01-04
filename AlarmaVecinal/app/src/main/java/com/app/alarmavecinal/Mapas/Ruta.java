@@ -57,10 +57,8 @@ import java.util.List;
 
 public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     String direccion, nombre;
-    double lat, lon,latabs,lonabs;
+    String lat, lon;
     ArrayList<Double> latl=new ArrayList<>(), lonl=new ArrayList<>();
-    LocationManager locationManager = null;
-    LocationListener locationListener = null;
     int cont=0;
     GoogleMap googleMap;
     private Polyline mPolyline;
@@ -86,16 +84,22 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
         StrictMode.setThreadPolicy(policy);
         contenedor_direccion=findViewById(R.id.contenedor_direccion);
 
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         nombre = getIntent().getExtras().get("nombre").toString();
         direccion = getIntent().getExtras().get("direccion").toString();
-        lat = Double.parseDouble(getIntent().getExtras().get("lat").toString());
-        lon = Double.parseDouble(getIntent().getExtras().get("lon").toString());
-        setTitle(nombre);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        contenedor_direccion.setText("Direccion: "+direccion);
 
-        locationManager= (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        lat = getIntent().getExtras().get("lat").toString();
+        lon = getIntent().getExtras().get("lon").toString();
+        setTitle(nombre);
+        if(lat.length()>0 && lon.length()>0){
+
+            contenedor_direccion.setText("Direccion: "+direccion);
+        }else{
+            contenedor_direccion.setText("Sin Coordenadas.\nDireccion: "+direccion);
+        }
+
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
@@ -111,6 +115,7 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
                     float X_Axis = event.values[0];
                     float Y_Axis = event.values[1];
                     angulo = Math.atan2(X_Axis, Y_Axis)/(Math.PI/180)*-1;
+                    funciones.Logo("sensorgiro",""+angulo);
 
 
                 }
@@ -137,7 +142,8 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMapt) {
         googleMap = googleMapt;
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(nombre));
+        if(lat.length()>0 && lon.length()>0)
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(Double.parseDouble(lat), Double.parseDouble(lon))).title(nombre));
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -160,17 +166,13 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
                         if(funciones.VerificarSwitchGPS()&& findViewById(R.id.nota).getVisibility()==View.VISIBLE){
                             findViewById(R.id.nota).setVisibility(View.GONE);
                         }
-                        latabs=arg0.getLatitude();
-                        lonabs=arg0.getLongitude();
 
-                        CamaraPosition();
 
-                        //googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacion,18));
+                        CamaraPosition(arg0.getLatitude(),arg0.getLongitude());
 
-                        if(cont==0) {
-                            latl.add(arg0.getLatitude());
-                            lonl.add(arg0.getLongitude());
-                            Trazar();
+
+                        if(cont==0 && lat.length()>0 && lon.length()>0) {
+                            Trazar(arg0.getLatitude(),arg0.getLongitude());
                             cont++;
                         }
 
@@ -182,10 +184,10 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
     }
 
 
-    public void CamaraPosition(){
+    public void CamaraPosition(double latitude, double longitude){
 
-        if(latabs!=0.0 && lonabs!=0.0 ){
-            LatLng ubicacion = new LatLng(latabs, lonabs);
+        if(latitude!=0.0 && longitude!=0.0 ){
+            LatLng ubicacion = new LatLng(latitude, longitude);
             CameraPosition cameraPosition = new CameraPosition.Builder()
                     .target(ubicacion)      // Sets the center of the map to Mountain View
                     .zoom(19)                   // Sets the zoom
@@ -369,24 +371,23 @@ public class Ruta extends AppCompatActivity implements OnMapReadyCallback {
 
     }
 
-    private void Trazar() {
+    private void Trazar(double latl, double lonl) {
         if(cont==0){
-            String url = getDirectionsUrl(new LatLng(latl.get(0), lonl.get(0)),new LatLng(lat, lon));
+            String url = getDirectionsUrl(new LatLng(latl, lonl),new LatLng(Double.parseDouble(lat), Double.parseDouble(lon)));
 
             DownloadTask downloadTask = new DownloadTask();
 
             // Start downloading json data from Google Directions API
             downloadTask.execute(url);
 
-            LatLng ubicacion = new LatLng(latl.get(0), lonl.get(0));
+            LatLng ubicacion = new LatLng(latl, lonl);
             //googleMap.addMarker(new MarkerOptions().position(ubicacion) .title(direccion));
 
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(ubicacion,18f));
 
         }
 
-        if (locationListener != null && locationListener!=null)
-            locationManager.removeUpdates(locationListener);
+
     }
 
     @Override

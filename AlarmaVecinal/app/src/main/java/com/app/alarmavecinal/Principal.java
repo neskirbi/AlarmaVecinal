@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -26,6 +28,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.view.Menu;
 import android.view.WindowManager;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
@@ -45,11 +48,16 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 public class Principal extends AppCompatActivity
@@ -59,16 +67,17 @@ public class Principal extends AppCompatActivity
     Funciones funciones;
     Boolean vi = false;
     View headerView;
-    TextView nombre,nota;
+    TextView nombre,nota,direccion;
     Context context;
     double lat=0,lon=0;
     ImageView localizar_on;
-    Switch switchgps;
+    SwitchMaterial switchgps;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference databaseReference;
 
-    private LocationManager mLocationManager = null;
+    LocationManager mLocationManager = null;
     LocationListener locationListener = null;
+    private String proovedor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +90,11 @@ public class Principal extends AppCompatActivity
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         localizar_on = findViewById(R.id.localizar_on);
         nota = findViewById(R.id.nota);
-        mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        switchgps = findViewById(R.id.switchgps);
+        direccion=findViewById(R.id.direccion);
+        direccion.setText(funciones.GetDireccionAntes());
+
+
 
 
         //borrar el registro del grupo si  esta en ""  por que guardaba el grupo vacio
@@ -170,7 +183,68 @@ public class Principal extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 funciones.Vibrar(funciones.VibrarPush());
-                PedirPermisoLocation();
+                localizar_on.setEnabled(false);
+
+
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    PedirPermisoLocation();
+                } else {
+
+                    VerificarUbicacion();
+                    mLocationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    locationListener = new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            lat=location.getLatitude();
+                            lon=location.getLongitude();
+                            funciones.SetUbicacion("{\"lat\":\""+lat+"\",\"lon\":\""+lon+"\"}");
+                            if(funciones.GetUbicacion().replace(" ","").length()>0){
+                                nota.setText("Ubicación guardada.");
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    nota.setTextColor(getColor(R.color.colorPrimary));
+                                }
+                            }
+
+                            direccion.setText(funciones.GetDireccionAhora(lat,lon));
+
+                        }
+
+                        @Override
+                        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+
+
+                        }
+
+                        @Override
+                        public void onProviderEnabled(String provider) {
+                            VerificarUbicacion();
+                        }
+
+                        @Override
+                        public void onProviderDisabled(String provider) {
+                            VerificarUbicacion();
+                        }
+                    };
+
+                    if (locationListener != null) {
+                        proovedor=LocationManager.GPS_PROVIDER;
+                        mLocationManager.requestLocationUpdates(proovedor, 0, 0, locationListener);
+                    } else {
+                        Toast.makeText(context, "listener null", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        });
+
+        switchgps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    Toast.makeText(context, "Encendido.", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(context, "Apagado.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -209,47 +283,8 @@ public class Principal extends AppCompatActivity
     @Override
     protected void onPostResume() {
         super.onPostResume();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-
-        } else {
-
-
-            VerificarUbicacion();
-            locationListener = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    lat=location.getLatitude();
-                    lon=location.getLongitude();
-                    funciones.SetUbicacion("{\"lat\":\""+lat+"\",\"lon\":\""+lon+"\"}");
-                    VerificarUbicacion();
-
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status, Bundle extras) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String provider) {
-                    VerificarUbicacion();
-                }
-
-                @Override
-                public void onProviderDisabled(String provider) {
-                    VerificarUbicacion();
-                }
-            };
-
-            if (locationListener != null) {
-                mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
-            } else {
-                Toast.makeText(context, "listener null", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-
+        VerificarUbicacion();
+        localizar_on.setEnabled(true);
     }
 
     private void VerificarUbicacion() {
@@ -258,13 +293,6 @@ public class Principal extends AppCompatActivity
             Toast.makeText(context, "Encender GPS.", Toast.LENGTH_SHORT).show();
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 nota.setTextColor(getColor(R.color.error));
-            }
-        }else{
-            if(funciones.GetUbicacion().replace(" ","").length()>0){
-                nota.setText("Ubicación guardada.");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    nota.setTextColor(getColor(R.color.colorPrimary));
-                }
             }
         }
 
@@ -337,7 +365,11 @@ public class Principal extends AppCompatActivity
             startActivity(new Intent(this, Grupo.class));
         }
         else if (id == R.id.nav_emergencias) {
-            startActivity(new Intent(this, MapaEmergencia.class));
+            if (funciones.GetIdGrupo() != "") {
+                startActivity(new Intent(this, MapaEmergencia.class));
+            }else{
+                funciones.SinGrupo();
+            }
         }else if (id == R.id.nav_avisos) {
             if (funciones.GetIdGrupo() != "") {
                 startActivity(new Intent(this, AvisosLista.class));
@@ -418,6 +450,8 @@ public class Principal extends AppCompatActivity
         }
         return true;
     }
+
+
 
 
 }
