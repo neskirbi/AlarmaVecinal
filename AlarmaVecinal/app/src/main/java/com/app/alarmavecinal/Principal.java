@@ -87,6 +87,7 @@ public class Principal extends AppCompatActivity
         setSupportActionBar(toolbar);
         context = this;
         funciones = new Funciones(context);
+
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         localizar_on = findViewById(R.id.localizar_on);
         nota = findViewById(R.id.nota);
@@ -283,6 +284,7 @@ public class Principal extends AppCompatActivity
     @Override
     protected void onPostResume() {
         super.onPostResume();
+        funciones.ForzarEnviador();
         VerificarUbicacion();
         localizar_on.setEnabled(true);
     }

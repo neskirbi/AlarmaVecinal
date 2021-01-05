@@ -93,7 +93,7 @@ public class Funciones {
     public Funciones(Context context) {
         this.context = context;
         //verificando envios cada que se carga una activity
-        new Enviador().executeOnExecutor(threadPoolExecutor);
+
 
     }
 
@@ -665,10 +665,13 @@ public class Funciones {
                 String url=GetUrl()+context.getString(R.string.url_SetGrupo);
                 response=Conexion(data,url);
 
-                JSONObject jsonObject=new JSONObject(response);
-                if(jsonObject.get("respuesta").toString().contains("1")){
-                    db.execSQL("UPDATE grupo SET enviado=1 WHERE id_grupo='"+id_grupo+"' ");
+                if(response.length()>0){
+                    JSONObject jsonObject=new JSONObject(response);
+                    if(jsonObject.get("respuesta").toString().contains("1")){
+                        db.execSQL("UPDATE grupo SET enviado=1 WHERE id_grupo='"+id_grupo+"' ");
+                    }
                 }
+
 
             }
             c.close();
@@ -1523,7 +1526,7 @@ public class Funciones {
         } catch (Exception e) {
 
         }
-        return "Sin datos";
+        return "No has marcado tu ubicación.";
     }
 
     public String GetDireccionAhora(double lat, double lon) {
@@ -1535,7 +1538,7 @@ public class Funciones {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "Sin datos";
+        return "No se pudo obtener la dirección.";
     }
 
 
@@ -1718,13 +1721,6 @@ public class Funciones {
 
 
     public class Enviador extends AsyncTask {
-
-
-
-        public Enviador() {
-
-        }
-
 
 
         @Override

@@ -157,13 +157,12 @@ public class Grupo extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-
         super.onResume();
         if(!funciones.IsGrupoEnviado() && SQR!=""){
             funciones.CorrerVerificarEnviado(nota);
         }
         OcultarMenu();
-        funciones.VerificarServicios();
+
         if(SQR!=""){
 
             QuitarBotton();
@@ -184,6 +183,7 @@ public class Grupo extends AppCompatActivity {
             }
             OcultarItemsMenu();
         }
+        funciones.VerificarServicios();
     }
 
     public void Pop(View view) {

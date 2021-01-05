@@ -12,28 +12,7 @@ public class Lanzador extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Funciones funciones=new Funciones(context);
-        if(funciones.GetIdGrupo().replace(" ","").length()==32) {
-            if (!funciones.isMyServiceRunning(Emergencia.class, context)) {
-                Intent service1 = new Intent(context, Emergencia.class);
-                service1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(service1);
-                }
-                context.startService(service1);
-            }
-
-
-            if (!funciones.isMyServiceRunning(Notificador.class, context) && funciones.Check_Log()) {
-                Intent service3 = new Intent(context, Notificador.class);
-                service3.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    context.startForegroundService(service3);
-                }
-                context.startService(service3);
-
-
-            }
-        }
+        funciones.VerificarServicios();
       
 
 
