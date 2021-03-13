@@ -18,7 +18,7 @@ class GetSugerencias{
 
 		
 		
-		$sql="SELECT sug.sugerencia ,usu.nombres,sug.fecha 
+		$sql="SELECT sug.sugerencia,sug.fecha,usu.mail,usu.nombres,sug.fecha 
 		from sugerencias as sug 
 		join usuarios as usu on usu.id_usuario=sug.id_usuario 
 		order by sug.fecha  ";
@@ -26,7 +26,7 @@ class GetSugerencias{
 		$result=array();
 		$rows=$this->mysqli->query($sql);
 		while($row=$rows->fetch_array(MYSQLI_ASSOC)){
-			echo"<br><br>".$row['nombres'].":  ".base64_decode($row['sugerencia']);
+			echo"<br><br>".$row['nombres'].".<br>".$row["mail"].".<br>".$row['fecha']."<br>  ".base64_decode($row['sugerencia']);
 		
 		//echo json_encode($result);
 		
