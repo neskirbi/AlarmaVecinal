@@ -89,7 +89,7 @@ public class VerTransmision extends AppCompatActivity {
                     bandera=false;
                     startActivity(new Intent(context,ListaTransmision.class));
                 }
-                String respuesta=funciones.Conexion("{\"id_transmision\":\""+id_transmision+"\"}",funciones.GetUrl()+context.getResources().getString(R.string.url_GetStreamming));
+                String respuesta=funciones.Conexion("{\"id_transmision\":\""+id_transmision+"\"}",funciones.GetUrl()+context.getResources().getString(R.string.url_GetStreamming),"POST");
                 funciones.Logo("GetStreamming",respuesta);
                 try {
                     JSONObject jsonObject=new JSONObject(respuesta);

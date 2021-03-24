@@ -2,12 +2,14 @@ package com.app.alarmavecinal.LoginPack;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.app.alarmavecinal.EditarInfo.Datos;
 import com.app.alarmavecinal.Funciones;
 import com.app.alarmavecinal.Principal;
 import com.app.alarmavecinal.R;
@@ -34,6 +43,7 @@ public class Login extends AppCompatActivity {
     TextInputLayout tilmail,tilpass;
     Funciones funciones;
     Context context;
+    ProgressDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,65 +81,13 @@ public class Login extends AppCompatActivity {
     }
 
     public void Enviar(View view){
-        if(PedirPermiso()) {
-            Validar();
-        }
-    }
-
-    public void Validar(){
-        enviar.setEnabled(false);
-        Boolean key1=false,key2=false;
         funciones.Vibrar(funciones.VibrarPush());
 
-        if(mail.getText().toString().replace(" ","").length()==0 && pass.getText().toString().replace(" ","").length()==0){
-            funciones.Vibrar(funciones.VibrarError());
-            Toast.makeText(this, "Ingresar los datos.", Toast.LENGTH_SHORT).show();
-        }else{
-            String data="{\"mail\":\""+mail.getText().toString()+"\",\"pass\":\""+pass.getText().toString()+"\",\"fbtoken\":\""+ FirebaseInstanceId.getInstance().getToken()+""+"\"}";
-            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetOneUser));
-            try {
-
-                JSONArray jsonArray=new JSONArray(respuesta);
-                if(jsonArray.length()!=0){
-                    JSONObject jsonObject=new JSONObject(jsonArray.get(0).toString());
-                    if(jsonObject.getString("mail").contains(mail.getText().toString())){
-                        key1=true;
-                        tilmail.setError(null);
-                    }else{
-                        tilmail.setError("¡Dato Incorrecto!");
-                    }
-
-                    if(jsonObject.getString("pass").contains(pass.getText().toString())){
-                        key2=true;
-                        tilpass.setError(null);
-                    }
-                    else{
-                        tilpass.setError("¡Dato Incorrecto!");
-                    }
-
-                    if(key1 && key2){
-                        funciones.CreaLogin(jsonObject);
-                        funciones.Logo("errorqr",jsonObject.getString("id_grupo")+"=="+jsonObject.getString("id_grupo").length());
-                        if(jsonObject.getString("id_grupo").length()==32){
-                            funciones.GuardarGrupo2(jsonObject.getString("id_grupo"));
-                        }else{
-                            Toast.makeText(context, "No te has unido a un grupo aun.", Toast.LENGTH_SHORT).show();
-                        }
-
-                        startActivity(new Intent(getApplicationContext(),Principal.class));
-                    }
-                }else{
-                    Toast.makeText(this, "¡Datos Incorrectos!", Toast.LENGTH_SHORT).show();
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        if(PedirPermiso()) {
+            Login();
         }
-        enviar.setEnabled(true);
-
     }
+
 
 
     @Override
@@ -158,6 +116,73 @@ public class Login extends AppCompatActivity {
         }else{
         }
         return true;
+    }
+
+    public void Login(){
+
+        if(mail.getText().toString().replace(" ","").length()==0 && pass.getText().toString().replace(" ","").length()==0){
+            Toast.makeText(this, "Ingresar los datos.", Toast.LENGTH_SHORT).show();
+        }else{
+            dialog = ProgressDialog.show(Login.this, "", "Verificando...", true);
+            enviar.setEnabled(false);
+            funciones.AbrirConexion();
+
+            RequestQueue queue = Volley.newRequestQueue(this);
+            String url =funciones.GetUrl()+getString(R.string.url_login)+"/"+mail.getText().toString()+"/"+pass.getText().toString()+"";
+            funciones.Logo("login",url);
+            // Request a string response from the provided URL.
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            dialog.dismiss();
+                            enviar.setEnabled(true);
+                            // Display the first 500 characters of the response string.
+                            funciones.Logo("login",response);
+                            try {
+
+                                JSONArray jsonArray=new JSONArray(response);
+                                if(jsonArray.length()!=0){
+                                    JSONObject jsonObject=new JSONObject(jsonArray.get(0).toString());
+
+                                    funciones.CreaLogin(jsonObject);
+
+                                    if(jsonObject.getString("id_grupo").length()==32){
+                                        funciones.GuardarGrupoLogin(jsonObject.getString("id_grupo"),
+                                                jsonObject.getString("id_usuario_grupo"),
+                                                jsonObject.getString("nombre_grupo"));
+                                    }else{
+                                        Toast.makeText(context, "No te has unido a un grupo aun.", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    startActivity(new Intent(getApplicationContext(),Principal.class));
+                                }else{
+                                    Toast.makeText(getApplicationContext(), "¡Datos Incorrectos!", Toast.LENGTH_SHORT).show();
+                                }
+
+                            } catch (Exception e) {
+                                funciones.Logo("login",e.getMessage());
+
+                            }
+
+                        }
+
+
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    dialog.dismiss();
+                    funciones.Logo("login","That didn't work!");
+                    Toast.makeText(getApplicationContext(), "¡Error de conexion!", Toast.LENGTH_SHORT).show();
+                    enviar.setEnabled(true);
+                }
+            });
+
+            // Add the request to the RequestQueue.
+            queue.add(stringRequest);
+        }
+
+
     }
 
 

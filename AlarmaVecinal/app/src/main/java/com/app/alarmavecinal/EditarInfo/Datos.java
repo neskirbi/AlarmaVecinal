@@ -1,5 +1,6 @@
 package com.app.alarmavecinal.EditarInfo;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,7 +8,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.app.alarmavecinal.Principal;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.app.alarmavecinal.Funciones;
 import com.app.alarmavecinal.LoginPack.Login;
 import com.app.alarmavecinal.R;
@@ -21,6 +30,7 @@ public class Datos extends AppCompatActivity {
     EditText nombres,apellidos,direccion,pass;
     Context context;
     Funciones funciones;
+    ProgressDialog dialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,12 +44,58 @@ public class Datos extends AppCompatActivity {
         direccion=findViewById(R.id.direccion);
         pass=findViewById(R.id.pass);
 
-        GetInfo();
+        Edit();
+    }
+
+    public void Edit(){
+        dialog = ProgressDialog.show(Datos.this, "", "Cargando...", true);
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url =funciones.GetUrl()+getString(R.string.url_edit)+"/"+funciones.GetIdUsuario()+"/edit";
+        funciones.Logo("edit",url);
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+                        // Display the first 500 characters of the response string.
+                        funciones.Logo("edit",response);
+                        try {
+
+                            JSONObject jsonObject=new JSONObject(response);
+
+                            nombres.setText(jsonObject.get("nombres").toString());
+                            apellidos.setText(jsonObject.get("apellidos").toString());
+                            direccion.setText(jsonObject.getString("direccion"));
+                            pass.setText(jsonObject.getString("pass"));
+
+                        } catch (Exception e) {
+                            funciones.Logo("edit",e.getMessage());
+
+                        }
+
+                    }
+
+
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "¡Sin Servicio!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(getApplicationContext(),Principal.class));
+                dialog.dismiss();
+                funciones.Logo("login","That didn't work!");
+
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     private void GetInfo() {
         String data="{\"id_usuario\":\""+funciones.GetIdUsuario()+"\"}";
-        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetInfoToEdit));
+        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetInfoToEdit),"POST");
 
 
         try {
@@ -66,7 +122,6 @@ public class Datos extends AppCompatActivity {
         funciones.Vibrar(funciones.VibrarPush());
         String n=nombres.getText().toString(),a=apellidos.getText().toString(),d=direccion.getText().toString(),p=pass.getText().toString();
 
-        String response="";
         int cont=0;
         if(n.length()==0){
             Toast.makeText(context, "Debe ingresar su nombre.", Toast.LENGTH_SHORT).show();
@@ -89,9 +144,43 @@ public class Datos extends AppCompatActivity {
         }
 
          if(cont==0){
-            String data="{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"nombres\":\""+n+"\",\"apellidos\":\""+a+"\",\"direccion\":\""+d+"\",\"pass\":\""+p+"\"}";
+             RequestQueue queue = Volley.newRequestQueue(this);
+             String url =funciones.GetUrl()+getString(R.string.url_update_usuario)+"/"+funciones.GetIdUsuario();
+
+             // Request a string response from the provided URL.
+             try {
+                 JSONObject data= new JSONObject("{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"nombres\":\""+n+"\",\"apellidos\":\""+a+"\",\"direccion\":\""+d+"\",\"pass\":\""+p+"\"}");
+                 funciones.Logo("update",url);
+                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url,data,
+                         new Response.Listener<JSONObject>() {
+                             @Override
+                             public void onResponse(JSONObject response) {
+                                 funciones.Logo("update",response.toString());
+                                 funciones.LogOut();
+                                 startActivity(new Intent(getApplicationContext(), Login.class));
+
+                             }
+
+
+                         }, new Response.ErrorListener() {
+                     @Override
+                     public void onErrorResponse(VolleyError error) {
+                         funciones.Logo("update","That didn't work!: "+error.getMessage());
+
+                     }
+                 });
+
+                 // Add the request to the RequestQueue.
+                 queue.add(jsonObjectRequest);
+             } catch (JSONException e) {
+                 funciones.Logo("registro","That didn't work!: "+e.getMessage());
+             }
+
+
+             ///////////////////////
+           /*String data="{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"nombres\":\""+n+"\",\"apellidos\":\""+a+"\",\"direccion\":\""+d+"\",\"pass\":\""+p+"\"}";
             String url =funciones.GetUrl()+getString(R.string.url_SetInfoEdit);
-            response=funciones.Conexion(data,url);
+            response=funciones.Conexion(data,url,"POST");
 
             try {
                 JSONObject jsonObject=new JSONObject(response);
@@ -104,7 +193,7 @@ public class Datos extends AppCompatActivity {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            }
+            }*/
 
         }
     }

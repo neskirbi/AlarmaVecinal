@@ -61,7 +61,7 @@ public class NewAvisos extends AppCompatActivity {
         databaseReferenceAvisos.push().setValue(new Avisos(funciones.GetUIID(),funciones.GetIdUsuario(),asunto.getText().toString(),mensaje.getText().toString(),funciones.GetDate(),""));
         String response="", data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\",\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"asunto\":\""+funciones.ToBase64(asunto.getText().toString())+"\",\"mensaje\":\""+funciones.ToBase64(mensaje.getText().toString())+"\"}";
         String url =funciones.GetUrl()+getString(R.string.url_SetAvisos);
-        response=funciones.Conexion(data,url);
+        response=funciones.Conexion(data,url,"POST");
 
         try {
             JSONObject jsonObject=new JSONObject(response);

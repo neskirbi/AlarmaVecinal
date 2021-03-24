@@ -21,6 +21,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.app.alarmavecinal.Adapters.AdapterAlertas;
 import com.app.alarmavecinal.BuildConfig;
 import com.app.alarmavecinal.Estructuras.Alertas;
@@ -86,9 +92,7 @@ public class NewAlerta extends AppCompatActivity implements AdapterAlertas.Recyc
     @Override
     protected void onResume() {
         super.onResume();
-        funciones.Vibrar(funciones.VibrarPush());
-        Descarga descarga=new Descarga();
-        descarga.executeOnExecutor(threadPoolExecutor);
+        Descarga();
     }
 
     public void Agregar(View view){
@@ -99,59 +103,58 @@ public class NewAlerta extends AppCompatActivity implements AdapterAlertas.Recyc
 
     public void Descargar(View view){
         funciones.Vibrar(funciones.VibrarPush());
-        Descarga descarga=new Descarga();
-        descarga.executeOnExecutor(threadPoolExecutor);
+
+        Descarga();
     }
 
 
 
-    class Descarga extends AsyncTask {
-        @Override
-        protected void onPreExecute() {
+    public void Descarga(){
+        dialog = ProgressDialog.show(NewAlerta.this, "", "Verificando...", true);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url =funciones.GetUrl()+getString(R.string.url_prealertas);
+        funciones.Logo("prealertas",url);
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+                        alertas.clear();
 
-            dialog=ProgressDialog.show(context, "",
-                    "Cargando...", true);
-            dialog.setCancelable(true);
-        }
+                        funciones.Logo("prealertas",response);
+                        try {
 
+                            JSONArray jsonArray=new JSONArray(response);
+                            if(jsonArray.length()!=0){
+                                for (int i =0; i < jsonArray.length();i++){
+                                    JSONObject jsonObject=new JSONObject(jsonArray.get(i).toString());
+                                    alertas.add(new Alertas(jsonObject.get("id_alerta").toString(),jsonObject.get("imagen").toString(),jsonObject.get("asunto").toString(),jsonObject.get("created_at").toString(),jsonObject.toString()));
+                                }
 
-        @Override
-        protected void onPostExecute(Object o) {
-            super.onPostExecute(o);
-            if(dialog!=null)
-                dialog.dismiss();
-        }
+                                Cargar();
 
-        @Override
-        protected void onProgressUpdate(Object[] values) {
+                            }
+                        } catch (JSONException e) {
+                            funciones.Logo("prealertas","Error: "+e.getMessage());
+                        }
 
-            Cargar();
-        }
-
-        @Override
-        protected Object doInBackground(Object[] objects) {
-            alertas.clear();
-
-            String data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}";
-            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetPreAlertas));
-            try {
-
-                JSONArray jsonArray=new JSONArray(respuesta);
-                if(jsonArray.length()!=0){
-                    for (int i =0; i < jsonArray.length();i++){
-                        JSONObject jsonObject=new JSONObject(jsonArray.get(i).toString());
-                        alertas.add(new Alertas(jsonObject.get("id_alerta").toString(),jsonObject.get("imagen").toString(),jsonObject.get("asunto").toString(),jsonObject.get("fecha").toString(),jsonObject.toString()));
 
                     }
 
 
-                }
-            } catch (JSONException e) {
-                funciones.Logo("Catch","Error: "+e.getMessage());
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                funciones.Logo("prealertas","That didn't work!");
+                Toast.makeText(getApplicationContext(), "¡Error de conexion!", Toast.LENGTH_SHORT).show();
+
             }
-            publishProgress();
-            return null;
-        }
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     void Cargar(){
@@ -181,6 +184,7 @@ public class NewAlerta extends AppCompatActivity implements AdapterAlertas.Recyc
         alertDialog.setPositiveButton("Enviar",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        funciones.Vibrar(funciones.VibrarPush());
 
                         Enviar(json);
 
@@ -208,11 +212,11 @@ public class NewAlerta extends AppCompatActivity implements AdapterAlertas.Recyc
             String response="", data="{\"id_alerta\":\""+jsonObject0.get("id_alerta").toString()+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\",\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"imagen\":\""+jsonObject0.get("imagen").toString()+"\",\"asunto\":\""+jsonObject0.get("asunto").toString()+"\",\"mensaje\":\"\"}";
 
             String url =funciones.GetUrl()+getString(R.string.url_SetAlertas);
-            response=funciones.Conexion(data,url);
+            response=funciones.Conexion(data,url,"POST");
 
             JSONObject jsonObject=new JSONObject(response);
             if(jsonObject.get("respuesta").toString().contains("1")){
-                Toast.makeText(context, "¡Se guardo!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "¡Se envió la alerta!", Toast.LENGTH_SHORT).show();
                 finish();
             }else{
                 Toast.makeText(context, "¡Error al guardar!", Toast.LENGTH_SHORT).show();

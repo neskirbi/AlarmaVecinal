@@ -147,7 +147,7 @@ public class AvisosLista extends AppCompatActivity implements AdapterAvisos.Recy
             avisos.clear();
 
             String data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}";
-            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetAvisos));
+            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetAvisos),"POST");
             try {
 
                 JSONArray jsonArray=new JSONArray(respuesta);

@@ -50,7 +50,7 @@ public class Recuperar extends AppCompatActivity {
         enviar.setEnabled(false);
         enviar.setBackground(getDrawable(R.drawable.boton_disable));
         String data="{\"mail\":\""+mail.getText().toString()+"\"}";
-        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_Recuperar));
+        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_Recuperar),"POST");
         if(!respuesta.contains("Error")){
             mensaje.setText("¡Se envió  un correo con la contraseña!,\n Favor de buscarlo en la bandeja principal o en Spam de su correo");
 

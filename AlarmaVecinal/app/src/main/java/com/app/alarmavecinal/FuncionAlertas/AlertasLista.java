@@ -21,7 +21,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.app.alarmavecinal.Adapters.AdapterAlertas;
 import com.app.alarmavecinal.Adapters.AdapterAlertasLista;
 import com.app.alarmavecinal.Adapters.AdapterAvisos;
@@ -30,6 +37,8 @@ import com.app.alarmavecinal.Estructuras.Alertas;
 import com.app.alarmavecinal.Estructuras.AlertasL;
 import com.app.alarmavecinal.Estructuras.Avisos;
 import com.app.alarmavecinal.Funciones;
+import com.app.alarmavecinal.LoginPack.Login;
+import com.app.alarmavecinal.Principal;
 import com.app.alarmavecinal.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -107,11 +116,15 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
 
     public void Descargar(View view){
         funciones.Vibrar(funciones.VibrarPush());
-        Descarga descarga=new Descarga();
+        /*Descarga descarga=new Descarga();
+
         descarga.executeOnExecutor(threadPoolExecutor);
+
+         */
+        Descarga();
     }
     ProgressDialog dialog;
-    class Descarga extends AsyncTask{
+    class Descarga2 extends AsyncTask{
         @Override
         protected void onPreExecute() {
 
@@ -137,7 +150,7 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
             alertas.clear();
 
             String data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}";
-            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetAlertas));
+            String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetAlertas),"POST");
             try {
 
                 JSONArray jsonArray=new JSONArray(respuesta);
@@ -155,6 +168,53 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
             publishProgress();
             return null;
         }
+    }
+
+    public void Descarga(){
+        dialog = ProgressDialog.show(AlertasLista.this, "", "Verificando...", true);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url =funciones.GetUrl()+getString(R.string.url_prealertas);
+        funciones.Logo("prealertas",url);
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        dialog.dismiss();
+                        funciones.Logo("prealertas",response);
+                        try {
+
+                            JSONArray jsonArray=new JSONArray(response);
+                            if(jsonArray.length()!=0){
+                                for (int i =0; i < jsonArray.length();i++){
+                                    JSONObject jsonObject=new JSONObject(jsonArray.get(i).toString());
+                                    alertas.add(new AlertasL(jsonObject.get("id_alerta").toString(),jsonObject.get("id_usuario").toString(),jsonObject.get("imagen").toString(),jsonObject.get("asunto").toString(),jsonObject.get("nombre").toString(),jsonObject.get("fecha").toString(),jsonObject.toString()));
+                                }
+
+                                Cargar();
+
+
+                            }
+                        } catch (JSONException e) {
+                            funciones.Logo("prealertas","Error: "+e.getMessage());
+                        }
+
+
+                    }
+
+
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                dialog.dismiss();
+                funciones.Logo("prealertas","That didn't work!");
+                Toast.makeText(getApplicationContext(), "¡Error de conexion!", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 
     void Cargar(){

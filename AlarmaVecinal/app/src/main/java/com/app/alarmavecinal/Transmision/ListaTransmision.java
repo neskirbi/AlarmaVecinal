@@ -122,7 +122,7 @@ public class ListaTransmision extends AppCompatActivity {
         avisos.clear();
 
         String data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}";
-        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetListaStreamming));
+        String respuesta=funciones.Conexion(data,funciones.GetUrl()+getString(R.string.url_GetListaStreamming),"POST");
         funciones.Logo("gettrans",respuesta);
         try {
 

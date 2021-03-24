@@ -250,7 +250,7 @@ public class Grabacion extends AppCompatActivity {
         }
         @Override
         protected Object doInBackground(Object[] objects) {
-            String respuesta=funciones.Conexion(data,url);
+            String respuesta=funciones.Conexion(data,url,"POST");
 
             switch (paso){
                 case 1:

@@ -15,8 +15,17 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string name="url_debug">http://app-lab.com.mx/AlarmaVecinal/</string>
+    <string name="url_debug">http://192.168.0.2/AVL/public/</string>
     <string name="url">http://app-lab.com.mx/AlarmaVecinal/</string>
+    <!--<string name="url">http://192.168.0.2/AVL/public/</string>-->
+    <string name="url_registrar">api/usuarios</string>
+    <string name="url_login">api/login</string>
+    <string name="url_edit">api/usuarios</string>
+    <string name="url_update_usuario">api/usuarios</string>
+
+    <string name="url_prealertas">api/prealertas</string>
+
+
     <string name="url_GetOneUser">api/GetOneUser</string>
     <string name="url_SetUsuario">api/SetUsuario</string>
     <string name="url_Recuperar">api/Recuperar</string>

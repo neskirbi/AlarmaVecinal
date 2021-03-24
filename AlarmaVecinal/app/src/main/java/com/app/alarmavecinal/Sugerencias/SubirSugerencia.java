@@ -33,7 +33,7 @@ public class SubirSugerencia extends AppCompatActivity {
 
     public void Enviar(View view){
         funciones.Vibrar(funciones.VibrarPush());
-        funciones.Conexion("{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"sugerencia\":\""+funciones.ToBase64(sugerencia.getText().toString())+"\"}",funciones.GetUrl()+getString(R.string.url_SetSugerencia));
+        funciones.Conexion("{\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"sugerencia\":\""+funciones.ToBase64(sugerencia.getText().toString())+"\"}",funciones.GetUrl()+getString(R.string.url_SetSugerencia),"POST");
         Toast.makeText(context, "Gracias por su sugerencia,", Toast.LENGTH_SHORT).show();
         finish();
 

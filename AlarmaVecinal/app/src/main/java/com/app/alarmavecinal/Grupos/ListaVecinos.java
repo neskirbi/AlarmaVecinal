@@ -162,7 +162,7 @@ public class ListaVecinos extends AppCompatActivity {
                                 if(idv.equals(funciones.GetIdUsuario())){
                                     Toast.makeText(context, "No puedes sacarte tu mismo del grupo.", Toast.LENGTH_SHORT).show();
                                 }else {
-                                    String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetSacarGrupo));
+                                    String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetSacarGrupo),"POST");
                                     try {
                                         JSONObject jsonObject=new JSONObject(respuesta);
                                         if (jsonObject.get("response").toString().contains("1")){
@@ -210,7 +210,7 @@ public class ListaVecinos extends AppCompatActivity {
                                 if(idv.equals(funciones.GetIdUsuario())){
                                     Toast.makeText(context, "No puedes bloquearte tu mismo del grupo.", Toast.LENGTH_SHORT).show();
                                 }else{
-                                    String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetBloqueo));
+                                    String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetBloqueo),"POST");
                                     try {
                                         JSONObject jsonObject=new JSONObject(respuesta);
                                         if (jsonObject.get("response").toString().contains("1")){
@@ -255,7 +255,7 @@ public class ListaVecinos extends AppCompatActivity {
                 alertDialog.setPositiveButton("Sí",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetDesbloqueo));
+                                String respuesta=funciones.Conexion("{\"id_usuario\":\""+idv+"\",\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_SetDesbloqueo),"POST");
                                 try {
                                     JSONObject jsonObject=new JSONObject(respuesta);
                                     if (jsonObject.get("response").toString().contains("1")){
@@ -381,7 +381,7 @@ public class ListaVecinos extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
-            String respuesta=funciones.Conexion("{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_GetVecinosGrupo));
+            String respuesta=funciones.Conexion("{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_GetVecinosGrupo),"POST");
             publishProgress(respuesta);
             return null;
         }
@@ -463,7 +463,7 @@ public class ListaVecinos extends AppCompatActivity {
 
         @Override
         protected Object doInBackground(Object[] objects) {
-            String respuesta=funciones.Conexion("{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_GetBloqueados));
+            String respuesta=funciones.Conexion("{\"id_grupo\":\""+funciones.GetIdGrupo()+"\"}",funciones.GetUrl()+getString(R.string.url_GetBloqueados),"POST");
             publishProgress(respuesta);
             return null;
         }

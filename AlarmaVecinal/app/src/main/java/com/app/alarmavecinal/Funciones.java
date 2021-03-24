@@ -124,7 +124,12 @@ public class Funciones {
         return URL;
     }
 
-    public String Conexion(String data, String url) {
+    public void AbrirConexion(){
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+    }
+
+    public String Conexion(String data, String url,String metodo) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -140,7 +145,7 @@ public class Funciones {
             //Create a connection
             HttpURLConnection connection = (HttpURLConnection) myUrl.openConnection();
             //Set methods and timeouts
-            connection.setRequestMethod("POST");
+            connection.setRequestMethod(metodo);
             connection.setReadTimeout(60000);
             connection.setConnectTimeout(60000);
             //Logo("Conexion",connection.getContentLength()+"");
@@ -356,8 +361,10 @@ public class Funciones {
             service1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service1);
+            }else{
+                context.startService(service1);
             }
-            context.startService(service1);
+
         }
     }
 
@@ -367,8 +374,10 @@ public class Funciones {
             service3.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(service3);
+            }else{
+                context.startService(service3);
             }
-            context.startService(service3);
+
         }
     }
 
@@ -462,7 +471,7 @@ public class Funciones {
     }
 
     public boolean PuedoGrupo(String id_usuario,String id_grupo){
-        String respuesta=Conexion("{\"id_usuario\":\""+id_usuario+"\",\"id_grupo\":\""+id_grupo+"\"}",GetUrl()+context.getString(R.string.url_GetPuedoGrupo));
+        String respuesta=Conexion("{\"id_usuario\":\""+id_usuario+"\",\"id_grupo\":\""+id_grupo+"\"}",GetUrl()+context.getString(R.string.url_GetPuedoGrupo),"POST");
         try {
             JSONArray jsonArray=new JSONArray(respuesta);
             if(jsonArray.length()>0){
@@ -569,7 +578,7 @@ public class Funciones {
         String id_grupo="";
         if (PuedoGrupo(GetIdUsuario(),codigo)){
             String url=GetUrl()+context.getString(R.string.url_GetGrupo);
-            String respuesta=Conexion("{\"id_grupo\":\""+codigo+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url);
+            String respuesta=Conexion("{\"id_grupo\":\""+codigo+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url,"POST");
             try {
 
 
@@ -613,7 +622,7 @@ public class Funciones {
 
     public void SalirGrupo() {
         String url=GetUrl()+context.getString(R.string.url_SalirGrupo);
-        Conexion("{\"id_grupo\":\""+GetIdGrupo()+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url);
+        Conexion("{\"id_grupo\":\""+GetIdGrupo()+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url,"POST");
 
         try {
             Base base = new Base(context);
@@ -663,7 +672,7 @@ public class Funciones {
 
                 String data="{\"id_grupo\":\""+id_grupo+"\",\"id_usuario\":\""+id_usuario+"\",\"nombre\":\""+nombre+"\"}";
                 String url=GetUrl()+context.getString(R.string.url_SetGrupo);
-                response=Conexion(data,url);
+                response=Conexion(data,url,"POST");
 
                 if(response.length()>0){
                     JSONObject jsonObject=new JSONObject(response);
@@ -931,8 +940,8 @@ public class Funciones {
 
             db.close();
 
-        } catch (JSONException e) {
-
+        } catch (Exception e) {
+            Logo("login",e.getMessage());
         }
 
     }
@@ -1007,7 +1016,7 @@ public class Funciones {
         Base base = new Base(context);
         SQLiteDatabase db = base.getWritableDatabase();
         String url=GetUrl()+context.getString(R.string.url_GetChat),respuesta="";
-        respuesta=Conexion("{\"id_grupo\":\""+GetIdGrupo()+"\",\"fecha\":\""+GetFechaChat()+"\"}",url);
+        respuesta=Conexion("{\"id_grupo\":\""+GetIdGrupo()+"\",\"fecha\":\""+GetFechaChat()+"\"}",url,"POST");
         try {
             JSONArray chat_jsona=new JSONArray(respuesta);
             JSONObject chat_json;
@@ -1102,7 +1111,7 @@ public class Funciones {
 
 
                 String url=GetUrl()+context.getString(R.string.url_SetChat);
-                response=Conexion(mensaje,url);
+                response=Conexion(mensaje,url,"POST");
 
                 JSONObject jsonObject=new JSONObject(response);
                 if(jsonObject.get("respuesta").toString().contains("1")){
@@ -1224,7 +1233,7 @@ public class Funciones {
 
     public void CheckGrupo(){
         Logo("Enviador","Checando...");
-        String respuesta=Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\"}",GetUrl()+context.getString(R.string.url_CheckGrupo));
+        String respuesta=Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\"}",GetUrl()+context.getString(R.string.url_CheckGrupo),"POST");
         try {
             JSONArray jsonArray = new JSONArray(respuesta);
             for (int i=0;i<jsonArray.length();i++){
@@ -1253,7 +1262,7 @@ public class Funciones {
                 break;
             }
             contador++;
-            String respuesta=Conexion("{\"id_audio\":\""+id_audio+"\",\"audio\":\""+audio+"\",\"id_grupo\":\""+GetIdGrupo()+"\"}",GetUrl()+context.getResources().getString(R.string.url_CargarAudio));
+            String respuesta=Conexion("{\"id_audio\":\""+id_audio+"\",\"audio\":\""+audio+"\",\"id_grupo\":\""+GetIdGrupo()+"\"}",GetUrl()+context.getResources().getString(R.string.url_CargarAudio),"POST");
             contador++;
             try {
                 JSONObject jsonObject=new JSONObject(respuesta);
@@ -1316,7 +1325,7 @@ public class Funciones {
                 //Toast.makeText(context, "Fallo eL cargar la archivo.", Toast.LENGTH_SHORT).show();
                 break;
             }
-            String respuesta=Conexion("{\"indice\":\""+indice+"\",\"id_archivo\":\""+id_archivo+"\",\"id_grupo\":\""+GetIdGrupo()+"\",\"tipo\":\""+tipo+"\",\"archivo\":\""+archivo+"\"}",GetUrl()+context.getResources().getString(R.string.url_CargarArchivo));
+            String respuesta=Conexion("{\"indice\":\""+indice+"\",\"id_archivo\":\""+id_archivo+"\",\"id_grupo\":\""+GetIdGrupo()+"\",\"tipo\":\""+tipo+"\",\"archivo\":\""+archivo+"\"}",GetUrl()+context.getResources().getString(R.string.url_CargarArchivo),"POST");
             contador++;
             try {
                 JSONObject jsonObject=new JSONObject(respuesta);
@@ -1541,6 +1550,22 @@ public class Funciones {
         return "No se pudo obtener la dirección.";
     }
 
+    public void GuardarGrupoLogin(String id_grupo, String id_usuario_grupo, String nombre_grupo) {
+        Base base = new Base(context);
+        SQLiteDatabase db = base.getWritableDatabase();
+
+        ContentValues grupo = new ContentValues();
+        grupo.put("id_grupo",id_grupo);
+        grupo.put("id_usuario",id_usuario_grupo);
+        grupo.put("nombre", nombre_grupo);
+        grupo.put("enviado", 1);
+
+
+        db.insert("grupo", null, grupo);
+
+        db.close();
+    }
+
 
     class DescargaAsynk extends AsyncTask {
         String urls;
@@ -1640,7 +1665,7 @@ public class Funciones {
 
 
     public void UpdatefbToken(){
-        Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\",\"fbtoken\":\""+ FirebaseInstanceId.getInstance().getToken()+""+"\"}",GetUrl()+context.getResources().getString(R.string.url_UpdatefbToken));
+        Conexion("{\"id_usuario\":\""+GetIdUsuario()+"\",\"fbtoken\":\""+ FirebaseInstanceId.getInstance().getToken()+""+"\"}",GetUrl()+context.getResources().getString(R.string.url_UpdatefbToken),"POST");
     }
 
     public String GetCurrentActivity(){
