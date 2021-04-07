@@ -116,12 +116,7 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
 
     public void Descargar(View view){
         funciones.Vibrar(funciones.VibrarPush());
-        /*Descarga descarga=new Descarga();
 
-        descarga.executeOnExecutor(threadPoolExecutor);
-
-         */
-        Descarga();
     }
     ProgressDialog dialog;
     class Descarga2 extends AsyncTask{
@@ -170,52 +165,6 @@ public class AlertasLista extends AppCompatActivity implements AdapterAlertasLis
         }
     }
 
-    public void Descarga(){
-        dialog = ProgressDialog.show(AlertasLista.this, "", "Verificando...", true);
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String url =funciones.GetUrl()+getString(R.string.url_prealertas);
-        funciones.Logo("prealertas",url);
-        // Request a string response from the provided URL.
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        dialog.dismiss();
-                        funciones.Logo("prealertas",response);
-                        try {
-
-                            JSONArray jsonArray=new JSONArray(response);
-                            if(jsonArray.length()!=0){
-                                for (int i =0; i < jsonArray.length();i++){
-                                    JSONObject jsonObject=new JSONObject(jsonArray.get(i).toString());
-                                    alertas.add(new AlertasL(jsonObject.get("id_alerta").toString(),jsonObject.get("id_usuario").toString(),jsonObject.get("imagen").toString(),jsonObject.get("asunto").toString(),jsonObject.get("nombre").toString(),jsonObject.get("fecha").toString(),jsonObject.toString()));
-                                }
-
-                                Cargar();
-
-
-                            }
-                        } catch (JSONException e) {
-                            funciones.Logo("prealertas","Error: "+e.getMessage());
-                        }
-
-
-                    }
-
-
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                dialog.dismiss();
-                funciones.Logo("prealertas","That didn't work!");
-                Toast.makeText(getApplicationContext(), "¡Error de conexion!", Toast.LENGTH_SHORT).show();
-
-            }
-        });
-
-        // Add the request to the RequestQueue.
-        queue.add(stringRequest);
-    }
 
     void Cargar(){
 

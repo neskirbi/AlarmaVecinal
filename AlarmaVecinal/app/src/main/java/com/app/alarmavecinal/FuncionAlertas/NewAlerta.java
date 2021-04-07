@@ -111,6 +111,7 @@ public class NewAlerta extends AppCompatActivity implements AdapterAlertas.Recyc
 
     public void Descarga(){
         dialog = ProgressDialog.show(NewAlerta.this, "", "Verificando...", true);
+        funciones.AbrirConexion();
         RequestQueue queue = Volley.newRequestQueue(this);
         String url =funciones.GetUrl()+getString(R.string.url_prealertas);
         funciones.Logo("prealertas",url);

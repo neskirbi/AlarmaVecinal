@@ -446,20 +446,19 @@ public class Funciones {
         return direccion;
     }
 
-    public String GuardarGrupo(String nombre) {
-        String UUID="";
+    public String GuardarGrupo(String id_grupo,String nombre) {
         try {
             Base base = new Base(context);
             SQLiteDatabase db = base.getWritableDatabase();
 
             String id_usuario=GetIdUsuario();
-            UUID=GetUIID();
+
             ContentValues grupo = new ContentValues();
 
-            grupo.put("id_grupo", UUID);
+            grupo.put("id_grupo", id_grupo);
             grupo.put("id_usuario",id_usuario );
             grupo.put("nombre", nombre );
-            grupo.put("enviado", 0);
+            grupo.put("enviado", 1);
 
 
             db.insert("grupo", null, grupo);
@@ -467,7 +466,7 @@ public class Funciones {
         }catch (Exception e){}
 
 
-        return  UUID;
+        return  id_grupo;
     }
 
     public boolean PuedoGrupo(String id_usuario,String id_grupo){
@@ -574,55 +573,42 @@ public class Funciones {
     }
 
 
-    public String GuardarGrupo2(String codigo) {
+    public String GuardarGrupoCamara(String respons) {
         String id_grupo="";
-        if (PuedoGrupo(GetIdUsuario(),codigo)){
-            String url=GetUrl()+context.getString(R.string.url_GetGrupo);
-            String respuesta=Conexion("{\"id_grupo\":\""+codigo+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url,"POST");
+
+
             try {
+                JSONObject jsonObject=new JSONObject(respons);
+                if (!jsonObject.get("id_grupo").toString().isEmpty() ){
 
-
-                JSONArray jsonArray=new JSONArray(respuesta);
-                if (jsonArray.length()!=0){
                     Base base = new Base(context);
                     SQLiteDatabase db = base.getWritableDatabase();
 
-                    JSONObject jsonObject=new JSONObject(jsonArray.get(0).toString());
-
                     id_grupo=jsonObject.get("id_grupo").toString();
-
                     ContentValues grupo = new ContentValues();
                     grupo.put("id_grupo", jsonObject.get("id_grupo").toString());
                     grupo.put("id_usuario",jsonObject.get("id_usuario").toString());
                     grupo.put("nombre", jsonObject.get("nombre").toString() );
                     grupo.put("enviado", 1);
 
-
                     db.insert("grupo", null, grupo);
 
                     db.close();
-                    return id_grupo;
 
-
-                }else {
-                    return id_grupo;
                 }
-
 
 
             } catch (JSONException e) {
                 Logo("Escaner",e.getMessage());
 
             }
-        }
+
 
         return  id_grupo;
 
     }
 
     public void SalirGrupo() {
-        String url=GetUrl()+context.getString(R.string.url_SalirGrupo);
-        Conexion("{\"id_grupo\":\""+GetIdGrupo()+"\",\"id_usuario\":\""+GetIdUsuario()+"\"}",url,"POST");
 
         try {
             Base base = new Base(context);
@@ -694,6 +680,19 @@ public class Funciones {
 
     }
 
+    public void ActualizarGrupoEnviado(){
+        Logo("Enviador","Enviando...");
+
+        Base base = new Base(context);
+        SQLiteDatabase db = base.getWritableDatabase();
+
+        db.execSQL("UPDATE grupo SET enviado=1 WHERE id_grupo='"+GetIdGrupo()+"' ");
+
+        db.close();
+
+
+
+    }
     public boolean IsGrupoEnviado() {
         try {
             Base base = new Base(context);

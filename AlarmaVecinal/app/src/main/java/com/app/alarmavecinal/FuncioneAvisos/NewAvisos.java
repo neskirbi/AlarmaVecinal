@@ -59,21 +59,7 @@ public class NewAvisos extends AppCompatActivity {
         firebaseDatabaseAvisos = FirebaseDatabase.getInstance();
         databaseReferenceAvisos = firebaseDatabaseAvisos.getReference("Avisos-"+funciones.GetIdGrupo());//Sala de chat
         databaseReferenceAvisos.push().setValue(new Avisos(funciones.GetUIID(),funciones.GetIdUsuario(),asunto.getText().toString(),mensaje.getText().toString(),funciones.GetDate(),""));
-        String response="", data="{\"id_grupo\":\""+funciones.GetIdGrupo()+"\",\"id_usuario\":\""+funciones.GetIdUsuario()+"\",\"asunto\":\""+funciones.ToBase64(asunto.getText().toString())+"\",\"mensaje\":\""+funciones.ToBase64(mensaje.getText().toString())+"\"}";
-        String url =funciones.GetUrl()+getString(R.string.url_SetAvisos);
-        response=funciones.Conexion(data,url,"POST");
-
-        try {
-            JSONObject jsonObject=new JSONObject(response);
-            if(jsonObject.get("respuesta").toString().contains("1")){
-                Toast.makeText(context, "¡Se guardo!", Toast.LENGTH_SHORT).show();
-                finish();
-            }else{
-                Toast.makeText(context, "¡Error al guardar!", Toast.LENGTH_SHORT).show();
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        finish();
 
     }
 }

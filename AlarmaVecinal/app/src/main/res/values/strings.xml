@@ -15,15 +15,22 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string name="url_debug">http://192.168.0.2/AVL/public/</string>
+    <string name="url_debug">http://192.168.0.9/AVL/public/</string>
     <string name="url">http://app-lab.com.mx/AlarmaVecinal/</string>
     <!--<string name="url">http://192.168.0.2/AVL/public/</string>-->
     <string name="url_registrar">api/usuarios</string>
     <string name="url_login">api/login</string>
     <string name="url_edit">api/usuarios</string>
-    <string name="url_update_usuario">api/usuarios</string>
+
+    <string name="url_crear_grupo">api/grupos</string>
+    <string name="url_unirse_grupo">api/unirse</string>
+    <string name="url_salir_grupo">api/salir</string>
 
     <string name="url_prealertas">api/prealertas</string>
+
+
+
+
 
 
     <string name="url_GetOneUser">api/GetOneUser</string>
@@ -80,7 +87,7 @@
     <string name="url_SendNotifications">api/SendNotifications</string>
     <string name="url_UpdatefbToken">api/UpdatefbToken</string>
 
-    //Poner llave googlemaps(Recuerda poner la llave ue es para la version de produccion)
+    //Poner llave googlemaps(Recuerda poner la llave que es para la version de produccion)
     <string name="google_maps_key">AIzaSRD1UpmBYBueQcmF_zwJ_iakT0CUXpRRDlQ</string>
 
     <string name="id_banner">ca-app-pub-9864387520697583/7035351219</string>
@@ -93,6 +100,7 @@
     <string name="tab_text_2">Unirse</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="url_SubirSugerencia">api/sugerencias</string>
 
 
 </resources>

@@ -467,9 +467,8 @@ public class SalaChat extends AppCompatActivity {
 
 
     }
-    public void EnviarNotification(){
-        funciones.Conexion("{\"id_grupo\":\""+funciones.GetIdGrupo()+"\",\"mensaje\":\""+funciones.GetNombre()+"<br>Envio un mensaje.\"}",funciones.GetUrl()+getResources().getString(R.string.url_SendNotifications),"POST");
-    }
+
+
 
     private void EnviaImagen() {
         String id_imagen=funciones.GetUIID();

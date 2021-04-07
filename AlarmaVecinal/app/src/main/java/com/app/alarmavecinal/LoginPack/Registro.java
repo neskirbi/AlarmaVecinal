@@ -104,6 +104,7 @@ public class Registro extends AppCompatActivity {
 
         if(cont==0){
             dialog = ProgressDialog.show(Registro.this, "", "Registrando...", true);
+            funciones.AbrirConexion();
             RequestQueue queue = Volley.newRequestQueue(this);
             String url =funciones.GetUrl()+getString(R.string.url_registrar);
 

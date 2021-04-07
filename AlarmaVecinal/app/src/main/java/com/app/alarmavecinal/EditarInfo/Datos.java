@@ -49,7 +49,7 @@ public class Datos extends AppCompatActivity {
 
     public void Edit(){
         dialog = ProgressDialog.show(Datos.this, "", "Cargando...", true);
-
+        funciones.AbrirConexion();
         RequestQueue queue = Volley.newRequestQueue(this);
         String url =funciones.GetUrl()+getString(R.string.url_edit)+"/"+funciones.GetIdUsuario()+"/edit";
         funciones.Logo("edit",url);
@@ -144,8 +144,9 @@ public class Datos extends AppCompatActivity {
         }
 
          if(cont==0){
+             funciones.AbrirConexion();
              RequestQueue queue = Volley.newRequestQueue(this);
-             String url =funciones.GetUrl()+getString(R.string.url_update_usuario)+"/"+funciones.GetIdUsuario();
+             String url =funciones.GetUrl()+getString(R.string.url_edit)+"/"+funciones.GetIdUsuario();
 
              // Request a string response from the provided URL.
              try {
