@@ -67,8 +67,7 @@
             android:textColor="#249FD7"/>
 
         <Button
-            android:id="@+id/enviar"
-            android:onClick="Enviar"
+            android:onClick="Login"
             android:background="@drawable/boton_azul"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
@@ -80,6 +79,7 @@
 
         <TextView
             android:id="@+id/registrar"
+            android:onClick="Registrar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

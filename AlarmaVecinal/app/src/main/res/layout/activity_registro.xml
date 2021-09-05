@@ -101,7 +101,8 @@
                     android:layout_height="wrap_content"
                     android:maxLength="150"
                     android:maxLines="1"
-                    android:singleLine="true" />
+                    android:singleLine="true"
+                    android:inputType="textEmailAddress" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -155,12 +156,12 @@
 
             <Button
                 android:id="@+id/enviar"
+                android:onClick="Registrar"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"
                 android:background="@drawable/boton_azul"
-                android:onClick="Registrar"
                 android:text="Registrar"
                 android:textColor="#fff"
                 android:textSize="20dp"

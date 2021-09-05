@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
@@ -30,9 +31,15 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Usuario.Registro.RegistroView"
+            android:exported="true" />
+        <activity
+            android:name=".Usuario.Login.LoginView"
+            android:exported="true" />
+        <activity
             android:name=".Tabs.AyudaGrupoTab"
             android:label="@string/title_activity_ayuda_grupo_tab"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Variado.AyudaGrupo" />
         <activity android:name=".Mapas.Ruta" />
 

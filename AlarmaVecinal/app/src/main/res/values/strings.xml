@@ -15,9 +15,9 @@
     <string name="menu_share">Share</string>
     <string name="menu_send">Send</string>
 
-    <string name="url_debug">http://192.168.0.9/AVL/public/</string>
-    <string name="url">http://app-lab.com.mx/AlarmaVecinal/</string>
-    <!--<string name="url">http://192.168.0.2/AVL/public/</string>-->
+    <string name="url">https://app-lab.com.mx/AVL/public/</string>
+    <string name="url_debug">http://192.168.0.6/AVL/public/</string>
+
     <string name="url_registrar">api/usuarios</string>
     <string name="url_login">api/login</string>
     <string name="url_edit">api/usuarios</string>
@@ -27,10 +27,6 @@
     <string name="url_salir_grupo">api/salir</string>
 
     <string name="url_prealertas">api/prealertas</string>
-
-
-
-
 
 
     <string name="url_GetOneUser">api/GetOneUser</string>
@@ -90,9 +86,9 @@
     //Poner llave googlemaps(Recuerda poner la llave que es para la version de produccion)
     <string name="google_maps_key">AIzaSRD1UpmBYBueQcmF_zwJ_iakT0CUXpRRDlQ</string>
 
-    <string name="id_banner">ca-app-pub-9864387520697583/7035351219</string>
+    <string name="id_banner_p">ca-app-pub-9864387520697583/7035351219</string>
     <!--para la version de produccion debe tener la _p el de abajo-->
-    <string name="id_banner_p">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="id_banner">ca-app-pub-3940256099942544/6300978111</string>
 
 
     <string name="title_activity_ayuda_grupo_tab">AyudaGrupoTab</string>
